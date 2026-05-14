@@ -1,0 +1,67 @@
+---
+// src/pages/complexes/complexe-4/index.astro
+---
+
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Complex | Cinqd</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-900 text-white font-sans">
+
+    <main class="container mx-auto px-4 py-12">
+
+        <header class="flex items-center mb-12">
+             <a href="/" class="text-red-500 hover:text-red-400 transition-colors duration-300 mr-4">&lt;</a>
+            <h1 class="text-4xl font-extrabold">Financial <span class="text-red-500">Complex</span></h1>
+        </header>
+
+        <!-- Revenue Chart -->
+        <div class="bg-slate-800 rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-slate-200 mb-6">Suivi du Chiffre d'Affaires Mensuel</h2>
+            <canvas id="revenueChart"></canvas>
+        </div>
+
+        <!-- Invoice Management -->
+        <div class="bg-slate-800 rounded-xl shadow-lg p-8">
+            <div class="flex justify-between items-center mb-6">
+                 <h2 class="text-2xl font-bold text-slate-200">Gestion des Factures</h2>
+                <div class="flex items-center gap-4">
+                    <select class="bg-slate-700 border-slate-600 rounded-md p-2">
+                        <option>Filtrer par Statut</option>
+                        <option>Payée</option>
+                        <option>En attente</option>
+                        <option>En retard</option>
+                    </select>
+                    <button class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Nouvelle Facture</button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <!-- Invoice table will be here -->
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+                datasets: [{
+                    label: 'Chiffre d\'Affaires (TND)',
+                    data: [120000, 150000, 180000, 160000, 200000, 220000],
+                    backgroundColor: 'rgba(239, 68, 68, 0.5)',
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: { scales: { y: { beginAtZero: true } } }
+        });
+    </script>
+
+</body>
+</html>

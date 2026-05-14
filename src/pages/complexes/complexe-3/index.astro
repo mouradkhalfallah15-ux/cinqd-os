@@ -1,0 +1,65 @@
+---
+// src/pages/complexes/complexe-3/index.astro
+---
+
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing Complex | Cinqd</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-900 text-white font-sans">
+
+    <main class="container mx-auto px-4 py-12">
+
+        <header class="flex items-center mb-12">
+            <a href="/" class="text-red-500 hover:text-red-400 transition-colors duration-300 mr-4">&lt;</a>
+            <h1 class="text-4xl font-extrabold">Marketing <span class="text-red-500">Complex</span></h1>
+        </header>
+
+        <!-- Ads Performance -->
+        <div class="bg-slate-800 rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-slate-200 mb-6">Performance des Campagnes Ads</h2>
+            <canvas id="adsChart"></canvas>
+        </div>
+
+        <!-- Carthaginian Branding -->
+        <div class="bg-slate-800 rounded-xl shadow-lg p-8">
+             <h2 class="text-2xl font-bold text-slate-200 mb-6">Suivi du Branding Carthaginois</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold text-red-400 mb-4">Analyse de Sentiment</h3>
+                    <div class="space-y-4">
+                        <div class="bg-slate-900 p-4 rounded-lg"><span>Positif</span> <span class="float-right font-bold">85%</span></div>
+                        <div class="bg-slate-900 p-4 rounded-lg"><span>Neutre</span> <span class="float-right font-bold">10%</span></div>
+                        <div class="bg-slate-900 p-4 rounded-lg"><span>Négatif</span> <span class="float-right font-bold">5%</span></div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-red-400 mb-4">Nuage de Mots-clés</h3>
+                    <div class="p-4 bg-slate-900 rounded-lg flex justify-center items-center h-full">
+                        <p class="text-lg text-slate-400">[Image ou visualisation de nuage de mots-clés]</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const adsCtx = document.getElementById('adsChart').getContext('2d');
+        new Chart(adsCtx, {
+            type: 'line',
+            data: {
+                labels: ['Semaine 1', 'Semaine 2', 'Semaine 3', 'Semaine 4'],
+                datasets: [
+                    { label: 'Facebook Ads', data: [1200, 1900, 3000, 5000], borderColor: 'rgba(59, 130, 246, 1)', tension: 0.1 },
+                    { label: 'Instagram Ads', data: [800, 2200, 2800, 4500], borderColor: 'rgba(236, 72, 153, 1)', tension: 0.1 }
+                ]
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+
+---
+import Layout from '../../layouts/Layout.astro';
+import AIAuditeur from '../../components/AIAuditeur.jsx';
+import RecettesWizard from '../../components/RecettesWizard.jsx';
+
+// Récupère l'ID de la branche depuis l'URL. Ex: "sfax"
+export const { branchId } = Astro.params;
+
+// Met la première lettre en majuscule pour l'affichage
+const branchName = branchId.charAt(0).toUpperCase() + branchId.slice(1);
+---
+
+<Layout title={`Dashboard - Branche de ${branchName}`}>
+	<main class="min-h-screen bg-slate-950 p-4 md:p-8">
+        <div class="max-w-7xl mx-auto space-y-8">
+            <header class="flex justify-between items-center border-b border-slate-800 pb-6">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-white">Dashboard {branchName}</h1>
+                    <p class="text-slate-400">نظام الإدارة الذكي - Cinqd</p>
+                </div>
+                <div class="bg-red-500/10 text-red-500 px-4 py-2 rounded-full border border-red-500/20 text-sm font-bold">
+                    Mode Connecté: API Gemini v1.5
+                </div>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Section Gauche: Assistant Chat */}
+                <div class="space-y-4">
+                    <h2 class="text-xl font-bold text-slate-200 px-2">المدقق الذكي (AI Auditeur)</h2>
+                    <AIAuditeur branchId={branchId} client:only="react" />
+                </div>
+
+                {/* Section Droite: Assistant Production */}
+                <div class="space-y-4">
+                    <h2 class="text-xl font-bold text-slate-200 px-2">مساعد الإنتاج (Recettes Wizard)</h2>
+                    <RecettesWizard client:only="react" />
+                </div>
+            </div>
+        </div>
+	</main>
+</Layout>

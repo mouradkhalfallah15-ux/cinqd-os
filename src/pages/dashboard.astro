@@ -1,0 +1,28 @@
+
+---
+import Layout from '../layouts/Layout.astro';
+import { FiGrid } from 'react-icons/fi'
+---
+
+<Layout title="CINQD Command Center">
+	<main class="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <div class="bg-slate-800 text-white p-8 rounded-xl shadow-2xl max-w-2xl mx-auto font-sans w-full">
+            <div class="border-b border-slate-700 pb-4 mb-6">
+                <h2 class="text-2xl font-extrabold flex items-center"><FiGrid className="mr-3 text-red-500"/> Centre de Commande Principal</h2>
+                <p class="text-slate-400 mt-1">Sélectionnez une branche pour accéder à son tableau de bord d'audit IA.</p>
+            </div>
+            <div class="space-y-4">
+                <a href="/branches/sfax" 
+                   class="block p-6 bg-slate-700 hover:bg-red-600 rounded-lg transition-all ease-in-out duration-300 transform hover:scale-105">
+                    <h3 class="text-xl font-bold">Branche de Sfax</h3>
+                    <p class="text-sm text-slate-300">Point de vente et unité de production régionale.</p>
+                </a>
+                
+                {/* Ce template sera utilisé pour les futures branches */}
+                <div class="p-6 border-2 border-dashed border-slate-600 rounded-lg text-center text-slate-500">
+                    <p>+ Ajouter une nouvelle branche (À venir)</p>
+                </div>
+            </div>
+        </div>
+    </main>
+</Layout>

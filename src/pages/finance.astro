@@ -1,0 +1,84 @@
+---
+import FinanceManager from '../components/FinanceManager';
+import AiAuditor from '../components/AiAuditor';
+
+// finance.astro - مركب المالية والمحاسبة (Fiscal & Accountant Module)
+---
+
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<title>CINQD Finance OS</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+	</head>
+	<body class="bg-[#03060b] text-slate-200 font-sans min-h-screen">
+        
+        <nav class="border-b border-slate-900 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50">
+            <div class="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-green-600 rounded flex items-center justify-center font-bold text-white shadow-lg shadow-green-600/20">F</div>
+                    <span class="text-sm font-black tracking-widest uppercase text-slate-400">Finance <span class="text-green-600">Console</span></span>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2">
+                        <div class="h-2 w-2 bg-blue-500 rounded-full animate-pulse"></div>
+                        <span class="text-[10px] font-black text-blue-500 uppercase tracking-tighter">Fiscal Audit Sync Active</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="max-w-[1600px] mx-auto px-6 py-10">
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-10">
+                
+                {/* العمود الرئيسي للمحاسبة (9/12) */}
+                <div class="xl:col-span-9">
+                    <FinanceManager client:only="react" />
+                </div>
+
+                {/* العمود الجانبي للتدقيق الذكي (3/12) */}
+                <div class="xl:col-span-3 space-y-8">
+                    <div class="bg-slate-900/40 border border-slate-800 rounded-[2.5rem] p-8 shadow-2xl">
+                        <h3 class="text-xs font-black text-red-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                             <div class="w-1.5 h-4 bg-red-600 rounded-full"></div>
+                             AI Auditor (Fiscal Intelligence)
+                        </h3>
+                        <AiAuditor client:only="react" />
+                        <div class="mt-8 p-4 bg-red-600/5 border border-red-500/10 rounded-2xl">
+                            <p className="text-[11px] text-slate-500 font-medium italic">
+                                * "يا حكيم، فما فارق في كاسة الممثلين، ثبت في رابورات البارح."
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 bg-slate-950/50 rounded-3xl border border-slate-800">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-4">Prochaine Échéance Fiscale</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-black text-white">Déclaration TVA</span>
+                            <span class="px-2 py-1 bg-red-500/10 text-red-500 rounded text-[9px] font-black">J-5</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <footer class="py-12 border-t border-slate-900 text-center text-slate-700 text-[10px] font-bold uppercase tracking-[0.4em]">
+            CINQD Finance Framework • Tunisian Fiscal Module 1.0 • Build Stable
+        </footer>
+
+        <style is:global>
+            html { font-family: 'Inter', sans-serif; background: #03060b; }
+            ::-webkit-scrollbar { width: 4px; }
+            ::-webkit-scrollbar-track { background: #03060b; }
+            ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+            @media print {
+                nav, footer, button, .no-print { display: none !important; }
+                body { background: white !important; color: black !important; }
+                main { padding: 0 !important; }
+            }
+        </style>
+	</body>
+</html>

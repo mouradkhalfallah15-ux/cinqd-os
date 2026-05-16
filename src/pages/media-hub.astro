@@ -1,0 +1,76 @@
+---
+import MediaHub from '../components/MediaHub';
+import AiAuditor from '../components/AiAuditor';
+
+// force-refresh-1740445638210
+---
+
+<html lang="ar" dir="rtl">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>CINQD Media Hub | مدينة الإنتاج الإعلامي</title>
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+	</head>
+	<body class="bg-[#0a0f18] text-slate-200 font-['Cairo',_sans-serif] selection:bg-blue-500/30 min-h-screen">
+        
+        <!-- Navigation Header -->
+        <header class="border-b border-slate-800/60 bg-slate-900/40 backdrop-blur-md sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center font-bold text-white shadow-lg shadow-blue-600/20">5D</div>
+                    <h1 class="text-xl font-black tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">CINQD Media Hub</h1>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-medium text-slate-400">
+                    <span class="flex items-center gap-2 px-3 py-1 bg-blue-500/10 text-blue-400 rounded-full border border-blue-500/20">
+                        <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span>
+                        المدير التنفيذي التقني: Gemini 1.5 Pro
+                    </span>
+                    <a href="/" class="hover:text-white transition-colors">الرئيسية</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-6 py-12">
+            <div class="mb-12 text-center">
+                <h1 class="text-4xl md:text-5xl font-black text-white mb-4">مدينة الإنتاج الإعلامي & موديل الوثائق الذكي</h1>
+                <p class="text-slate-400 max-w-2xl mx-auto">مركز القيادة الذكي لإدارة المحتوى والوسائط وضمان الامتثال القانوني التونسي آلياً.</p>
+            </div>
+
+            <MediaHub client:only="react" />
+        </main>
+
+        <!-- AI Auditor -->
+        <div class="fixed bottom-8 right-8 z-[100]">
+            <AiAuditor client:only="react" />
+        </div>
+
+        <footer class="mt-20 py-10 border-t border-slate-800/50 text-center text-slate-500 text-sm">
+            <p>&copy; 2024 CINQD Media Hub - نظام إدارة المحتوى والوثائق الذكي</p>
+        </footer>
+	</body>
+</html>
+
+<style is:global>
+	:root {
+		--accent: 59, 130, 246;
+	}
+	html {
+		background: #0a0f18;
+	}
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #0a0f18;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #1e293b;
+        border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #334155;
+    }
+</style>

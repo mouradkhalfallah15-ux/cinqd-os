@@ -1,0 +1,26 @@
+---
+import Hero from '../components/landing/Hero';
+import Features from '../components/landing/Features';
+import Incentive from '../components/landing/Incentive';
+import Pricing from '../components/landing/Pricing';
+import Checkout from '../components/landing/Checkout';
+---
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinqd Landing Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body style="background-color: #FFFFFF;">
+    <Hero client:load />
+    <Features client:load />
+    <Incentive client:load />
+    <Pricing client:load />
+    <Checkout client:load />
+
+    <style is:global>
+        html { font-family: 'Inter', sans-serif; }
+    </style>
+</body>
+</html>

@@ -1,90 +1,77 @@
 ---
 import HRManager from '../components/HRManager';
 import AiAuditor from '../components/AiAuditor';
-
-// hr.astro - مركب الموارد البشرية (Staff & Payroll Management)
 ---
 
+<!DOCTYPE html>
 <html lang="fr">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<title>CINQD HR Management</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 	</head>
 	<body class="bg-[#05080f] text-slate-200 font-sans min-h-screen">
-        
-        <nav class="border-b border-slate-900 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50">
-            <div class="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-red-600 rounded flex items-center justify-center font-bold text-white shadow-lg shadow-red-600/20">HR</div>
-                    <span class="text-sm font-black tracking-widest uppercase text-slate-400">Human <span class="text-red-600">Resources</span></span>
-                </div>
-                <div class="flex items-center gap-6">
-                    <div class="flex items-center gap-2">
-                        <div class="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
-                        <span class="text-[10px] font-black text-green-500 uppercase tracking-tighter">Staff Monitoring Active</span>
-                    </div>
-                </div>
-            </div>
-        </nav>
 
-        <main class="max-w-[1600px] mx-auto px-6 py-10">
-            <header class="mb-10">
-                <h1 class="text-3xl font-black text-white">إدارة شؤون الموظفين والأجور</h1>
-                <p class="text-slate-500 text-sm mt-2 font-medium italic">"تتبع الحضور، المنح، والتسليفات مع ربط آلي بالمصاريف المالية."</p>
-            </header>
+		<!-- Auth guard: redirect to login if unauthenticated -->
+		<script>
+			import { auth } from '../firebase.js';
+			import { onAuthStateChanged } from 'firebase/auth';
+			onAuthStateChanged(auth, (user) => {
+				if (!user) window.location.replace('/admin/login');
+			});
+		</script>
 
-            <div class="grid grid-cols-1 xl:grid-cols-12 gap-10">
-                
-                {/* العمود الرئيسي (9/12) */}
-                <div class="xl:col-span-9">
-                    <HRManager client:only="react" />
-                </div>
+		<nav class="border-b border-slate-900 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50">
+			<div class="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between">
+				<div class="flex items-center gap-3">
+					<div class="w-8 h-8 bg-red-600 rounded flex items-center justify-center font-bold text-white shadow-lg shadow-red-600/20">HR</div>
+					<span class="text-sm font-black tracking-widest uppercase text-slate-400">Human <span class="text-red-600">Resources</span></span>
+				</div>
+				<div class="flex items-center gap-2">
+					<div class="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
+					<span class="text-[10px] font-black text-green-500 uppercase tracking-tighter">Staff Monitoring Active</span>
+				</div>
+			</div>
+		</nav>
 
-                {/* العمود الجانبي (3/12) */}
-                <div class="xl:col-span-3 space-y-8">
-                    <div class="bg-slate-900/40 border border-slate-800 rounded-[2.5rem] p-8 shadow-2xl">
-                        <h3 class="text-xs font-black text-red-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-                             <div class="w-1.5 h-4 bg-red-600 rounded-full"></div>
-                             AI HR Auditor
-                        </h3>
-                        <AiAuditor client:only="react" />
-                        <div class="mt-8 p-4 bg-red-600/5 border border-red-500/10 rounded-2xl">
-                            <p className="text-[11px] text-slate-500 font-medium italic">
-                                * "يا حكيم، فما غيابات كثرت الجمعة هاذي، ثبت في الانضباط متاع لوزين."
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div class="p-6 bg-slate-950/50 rounded-3xl border border-slate-800">
-                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-4">Statistiques du Mois</p>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs text-slate-400">إجمالي الأجور</span>
-                                <span class="text-sm font-black text-white">--- TND</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs text-slate-400">ساعات العمل الإضافية</span>
-                                <span class="text-sm font-black text-red-500">--- H</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+		<main class="max-w-[1600px] mx-auto px-6 py-10">
+			<header class="mb-10">
+				<h1 class="text-3xl font-black text-white">إدارة شؤون الموظفين والأجور</h1>
+				<p class="text-slate-500 text-sm mt-2 font-medium italic">"تتبع الحضور، المنح، والتسليفات مع ربط آلي بالمصاريف المالية."</p>
+			</header>
 
-            </div>
-        </main>
+			<div class="grid grid-cols-1 xl:grid-cols-12 gap-10">
 
-        <footer class="py-12 border-t border-slate-900 text-center text-slate-700 text-[10px] font-bold uppercase tracking-[0.4em]">
-            CINQD HR Framework • Payroll Module 1.0 • Stable Build
-        </footer>
+				<!-- Main HR column (9/12) -->
+				<div class="xl:col-span-9">
+					<HRManager client:only="react" />
+				</div>
 
-        <style is:global>
-            html { font-family: 'Inter', sans-serif; background: #05080f; }
-            ::-webkit-scrollbar { width: 4px; }
-            ::-webkit-scrollbar-track { background: #05080f; }
-            ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
-        </style>
+				<!-- AI Auditor sidebar (3/12) -->
+				<div class="xl:col-span-3">
+					<div class="bg-slate-900/40 border border-slate-800 rounded-[2.5rem] p-8 shadow-2xl xl:sticky xl:top-24">
+						<h3 class="text-xs font-black text-red-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+							<div class="w-1.5 h-4 bg-red-600 rounded-full"></div>
+							AI HR Auditor
+						</h3>
+						<AiAuditor client:only="react" />
+					</div>
+				</div>
+
+			</div>
+		</main>
+
+		<footer class="py-12 border-t border-slate-900 text-center text-slate-700 text-[10px] font-bold uppercase tracking-[0.4em]">
+			CINQD HR Framework • Payroll Module 1.0 • Stable Build
+		</footer>
+
+		<style is:global>
+			html { font-family: 'Inter', sans-serif; background: #05080f; }
+			::-webkit-scrollbar { width: 4px; }
+			::-webkit-scrollbar-track { background: #05080f; }
+			::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+		</style>
 	</body>
 </html>

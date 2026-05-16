@@ -1,28 +1,54 @@
-
 ---
-import Layout from '../layouts/Layout.astro';
-import { FiGrid } from 'react-icons/fi'
+// dashboard.astro - Centre de Commande Principal (Branch Navigation Hub)
 ---
 
-<Layout title="CINQD Command Center">
-	<main class="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-        <div class="bg-slate-800 text-white p-8 rounded-xl shadow-2xl max-w-2xl mx-auto font-sans w-full">
-            <div class="border-b border-slate-700 pb-4 mb-6">
-                <h2 class="text-2xl font-extrabold flex items-center"><FiGrid className="mr-3 text-red-500"/> Centre de Commande Principal</h2>
-                <p class="text-slate-400 mt-1">Sélectionnez une branche pour accéder à son tableau de bord d'audit IA.</p>
-            </div>
-            <div class="space-y-4">
-                <a href="/branches/sfax" 
-                   class="block p-6 bg-slate-700 hover:bg-red-600 rounded-lg transition-all ease-in-out duration-300 transform hover:scale-105">
-                    <h3 class="text-xl font-bold">Branche de Sfax</h3>
-                    <p class="text-sm text-slate-300">Point de vente et unité de production régionale.</p>
-                </a>
-                
-                {/* Ce template sera utilisé pour les futures branches */}
-                <div class="p-6 border-2 border-dashed border-slate-600 rounded-lg text-center text-slate-500">
-                    <p>+ Ajouter une nouvelle branche (À venir)</p>
-                </div>
-            </div>
-        </div>
-    </main>
-</Layout>
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<title>CINQD Command Center</title>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+	</head>
+	<body class="bg-slate-950 text-slate-200 font-sans min-h-screen flex items-center justify-center p-4">
+
+		<!-- Auth guard: redirect to login if unauthenticated -->
+		<script>
+			import { auth } from '../firebase.js';
+			import { onAuthStateChanged } from 'firebase/auth';
+			onAuthStateChanged(auth, (user) => {
+				if (!user) window.location.replace('/admin/login');
+			});
+		</script>
+
+		<div class="bg-slate-800 text-white p-8 rounded-2xl shadow-2xl max-w-2xl mx-auto w-full">
+			<div class="border-b border-slate-700 pb-4 mb-6">
+				<h2 class="text-2xl font-extrabold flex items-center gap-3">
+					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500">
+						<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+					</svg>
+					Centre de Commande Principal
+				</h2>
+				<p class="text-slate-400 mt-1">Sélectionnez une branche pour accéder à son tableau de bord d'audit IA.</p>
+			</div>
+			<div class="space-y-4">
+				<a
+					href="/branches/sfax"
+					class="block p-6 bg-slate-700 hover:bg-red-600 rounded-xl transition-all ease-in-out duration-300 hover:scale-105"
+				>
+					<h3 class="text-xl font-bold">Branche de Sfax</h3>
+					<p class="text-sm text-slate-300 mt-1">Point de vente et unité de production régionale.</p>
+				</a>
+
+				<div class="p-6 border-2 border-dashed border-slate-600 rounded-xl text-center text-slate-500">
+					<p>+ Ajouter une nouvelle branche (À venir)</p>
+				</div>
+			</div>
+		</div>
+
+		<style is:global>
+			html { font-family: 'Inter', system-ui, sans-serif; background: #020617; }
+		</style>
+	</body>
+</html>

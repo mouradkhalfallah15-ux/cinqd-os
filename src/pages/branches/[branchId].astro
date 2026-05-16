@@ -1,42 +1,74 @@
-
 ---
-import Layout from '../../layouts/Layout.astro';
 import AIAuditeur from '../../components/AIAuditeur.jsx';
-import RecettesWizard from '../../components/RecettesWizard.jsx';
+import RecettesWizardV2 from '../../components/RecettesWizardV2.jsx';
 
-// Récupère l'ID de la branche depuis l'URL. Ex: "sfax"
-export const { branchId } = Astro.params;
+export function getStaticPaths() {
+  // Add a new entry here each time a branch is created.
+  return [
+    { params: { branchId: 'sfax' } },
+  ];
+}
 
-// Met la première lettre en majuscule pour l'affichage
+const { branchId } = Astro.params;
 const branchName = branchId.charAt(0).toUpperCase() + branchId.slice(1);
 ---
 
-<Layout title={`Dashboard - Branche de ${branchName}`}>
-	<main class="min-h-screen bg-slate-950 p-4 md:p-8">
-        <div class="max-w-7xl mx-auto space-y-8">
-            <header class="flex justify-between items-center border-b border-slate-800 pb-6">
-                <div>
-                    <h1 class="text-3xl font-extrabold text-white">Dashboard {branchName}</h1>
-                    <p class="text-slate-400">نظام الإدارة الذكي - Cinqd</p>
-                </div>
-                <div class="bg-red-500/10 text-red-500 px-4 py-2 rounded-full border border-red-500/20 text-sm font-bold">
-                    Mode Connecté: API Gemini v1.5
-                </div>
-            </header>
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<title>Dashboard — Branche de {branchName} · CINQD</title>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+	</head>
+	<body class="bg-slate-950 text-slate-200 font-sans min-h-screen">
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Section Gauche: Assistant Chat */}
-                <div class="space-y-4">
-                    <h2 class="text-xl font-bold text-slate-200 px-2">المدقق الذكي (AI Auditeur)</h2>
-                    <AIAuditeur branchId={branchId} client:only="react" />
-                </div>
+		<!-- Auth guard: redirect to login if unauthenticated -->
+		<script>
+			import { auth } from '../../firebase.js';
+			import { onAuthStateChanged } from 'firebase/auth';
+			onAuthStateChanged(auth, (user) => {
+				if (!user) window.location.replace('/admin/login');
+			});
+		</script>
 
-                {/* Section Droite: Assistant Production */}
-                <div class="space-y-4">
-                    <h2 class="text-xl font-bold text-slate-200 px-2">مساعد الإنتاج (Recettes Wizard)</h2>
-                    <RecettesWizard client:only="react" />
-                </div>
-            </div>
-        </div>
-	</main>
-</Layout>
+		<main class="min-h-screen p-4 md:p-8">
+			<div class="max-w-7xl mx-auto space-y-8">
+
+				<header class="flex justify-between items-center border-b border-slate-800 pb-6">
+					<div>
+						<h1 class="text-3xl font-extrabold text-white">Dashboard {branchName}</h1>
+						<p class="text-slate-400 mt-1">نظام الإدارة الذكي — Cinqd</p>
+					</div>
+					<div class="bg-red-500/10 text-red-500 px-4 py-2 rounded-full border border-red-500/20 text-sm font-bold">
+						Mode Connecté: API Gemini v1.5
+					</div>
+				</header>
+
+				<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+					<!-- AI Auditeur -->
+					<div class="space-y-4">
+						<h2 class="text-xl font-bold text-slate-200 px-2">المدقق الذكي (AI Auditeur)</h2>
+						<AIAuditeur branchId={branchId} client:only="react" />
+					</div>
+
+					<!-- Production Wizard -->
+					<div class="space-y-4">
+						<h2 class="text-xl font-bold text-slate-200 px-2">مساعد الإنتاج (Recettes Wizard)</h2>
+						<RecettesWizardV2 client:only="react" />
+					</div>
+
+				</div>
+			</div>
+		</main>
+
+		<style is:global>
+			html { font-family: 'Inter', system-ui, sans-serif; background: #020617; }
+			::-webkit-scrollbar { width: 4px; }
+			::-webkit-scrollbar-track { background: #020617; }
+			::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+		</style>
+	</body>
+</html>

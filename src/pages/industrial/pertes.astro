@@ -1,1 +1,43 @@
----layout: ../../layouts/Layout.astro---<main><h1>Pertes</h1></main>
+---
+// Waste & Loss tracking module (en développement)
+---
+
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<title>Pertes — CINQD Industrial</title>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+	</head>
+	<body class="bg-[#05080f] text-slate-200 font-sans min-h-screen flex items-center justify-center">
+
+		<script>
+			import { auth } from '../../firebase.js';
+			import { onAuthStateChanged } from 'firebase/auth';
+			onAuthStateChanged(auth, (user) => {
+				if (!user) window.location.replace('/admin/login');
+			});
+		</script>
+
+		<div class="text-center space-y-6 p-8">
+			<div class="w-16 h-16 bg-orange-600/10 border border-orange-600/20 rounded-2xl flex items-center justify-center mx-auto">
+				<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-orange-400">
+					<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+				</svg>
+			</div>
+			<div>
+				<h1 class="text-2xl font-black text-white">Suivi des Pertes</h1>
+				<p class="text-slate-500 text-sm mt-2">Module en développement.</p>
+			</div>
+			<a href="/factory" class="inline-flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-xl transition-all text-sm border border-slate-700">
+				Retour à Industrial Complex
+			</a>
+		</div>
+
+		<style is:global>
+			html { font-family: 'Inter', system-ui, sans-serif; background: #05080f; }
+		</style>
+	</body>
+</html>

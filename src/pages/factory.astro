@@ -1,106 +1,83 @@
 ---
-import ProductionWizard from '../components/RecettesWizardV2';
-import QualityControl from '../components/QualityOutputMonitor';
-import StockManagement from '../components/StockManagement';
+import IndustrialComplex from '../components/IndustrialComplex';
 import AIAuditor from '../components/AiAuditor';
-
-// factory.astro - المركب الصناعي المتكامل (Industrial Module)
-// التثبيت اليدوي للموديلات: Recipes, Production, Quality, Inventory
 ---
 
+<!DOCTYPE html>
 <html lang="fr">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
 		<title>CINQD Industrial Console</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 	</head>
 	<body class="bg-[#05080f] text-slate-200 font-sans selection:bg-red-500/30 min-h-screen">
-        
-        <!-- Header Console -->
-        <header class="border-b border-slate-800/60 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50">
-            <div class="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <div class="w-8 h-8 bg-red-600 rounded shadow-lg shadow-red-600/40 flex items-center justify-center font-bold">5D</div>
-                    <h1 class="text-sm font-black tracking-widest uppercase">Industrial <span class="text-red-500">Command Center</span></h1>
-                </div>
-                <div class="flex items-center gap-6 text-[10px] font-bold text-slate-500">
-                    <span class="flex items-center gap-2"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> SYSTEM: ONLINE</span>
-                    <span class="flex items-center gap-2"><span class="w-2 h-2 bg-blue-500 rounded-full"></span> DB: FIREBASE SYNCED</span>
-                </div>
-            </div>
-        </header>
 
-        <main class="max-w-[1600px] mx-auto px-6 py-10">
-            <div class="grid grid-cols-1 xl:grid-cols-12 gap-10">
-                
-                <!-- العمود الأول: محرك الإنتاج والجودة -->
-                <div class="xl:col-span-7 space-y-10">
-                    
-                    <!-- 🛠️ موديل أمر الصنع والروسات (Production & Recipes) -->
-                    <section id="production-section" class="bg-slate-900/40 border border-slate-800 rounded-[2.5rem] p-2 shadow-2xl">
-                        <div class="p-8">
-                            <h2 class="text-xl font-bold mb-6 flex items-center gap-3">
-                                <span class="w-1.5 h-6 bg-red-600 rounded-full"></span>
-                                PRODUCTION WIZARD & RECIPES
-                            </h2>
-                            <ProductionWizard client:only="react" />
-                        </div>
-                    </section>
+		<!-- Auth guard: redirect to login if unauthenticated -->
+		<script>
+			import { auth } from '../firebase.js';
+			import { onAuthStateChanged } from 'firebase/auth';
+			onAuthStateChanged(auth, (user) => {
+				if (!user) window.location.replace('/admin/login');
+			});
+		</script>
 
-                    <!-- 🧪 موديل مراقبة الجودة (Quality Control) -->
-                    <section id="quality-section" class="bg-slate-900/40 border border-slate-800 rounded-[2.5rem] p-2 shadow-2xl">
-                        <div class="p-8">
-                            <h2 class="text-xl font-bold mb-6 flex items-center gap-3">
-                                <span class="w-1.5 h-6 bg-green-600 rounded-full"></span>
-                                QUALITY CONTROL & BATCH MONITORING
-                            </h2>
-                            <QualityControl client:only="react" />
-                        </div>
-                    </section>
-                </div>
+		<!-- Header -->
+		<header class="border-b border-slate-800/60 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50">
+			<div class="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between">
+				<div class="flex items-center gap-4">
+					<div class="w-8 h-8 bg-red-600 rounded shadow-lg shadow-red-600/40 flex items-center justify-center font-bold text-white">5D</div>
+					<h1 class="text-sm font-black tracking-widest uppercase">Industrial <span class="text-red-500">Command Center</span></h1>
+				</div>
+				<div class="flex items-center gap-6 text-[10px] font-bold text-slate-500">
+					<span class="flex items-center gap-2">
+						<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+						SYSTEM: ONLINE
+					</span>
+					<span class="flex items-center gap-2">
+						<span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+						DB: FIREBASE SYNCED
+					</span>
+				</div>
+			</div>
+		</header>
 
-                <!-- العمود الثاني: المخزن والتدقيق -->
-                <div class="xl:col-span-5 space-y-10">
-                    
-                    <!-- 📦 موديل المخزن (Inventory/Stock) -->
-                    <section id="stock-section" class="bg-slate-900/40 border border-slate-800 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-32 h-32 bg-red-600/5 blur-3xl rounded-full"></div>
-                        <h2 class="text-xl font-bold mb-6 flex items-center gap-3">
-                            <span class="w-1.5 h-6 bg-blue-600 rounded-full"></span>
-                            STOCK MANAGEMENT
-                        </h2>
-                        <StockManagement client:only="react" />
-                    </section>
+		<main class="max-w-[1600px] mx-auto px-6 py-10">
+			<div class="grid grid-cols-1 xl:grid-cols-12 gap-10">
 
-                    <!-- 🤖 المدقق الذكي (AI Auditor) -->
-                    <section id="ai-section" class="bg-slate-900/80 border border-red-900/30 rounded-[2rem] p-8 shadow-2xl">
-                        <h2 class="text-xl font-bold mb-4 text-red-500 flex items-center gap-3">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-                            AI SYSTEM AUDITOR
-                        </h2>
-                        <AIAuditor client:only="react" />
-                    </section>
-                </div>
+				<!-- Industrial Complex — 4 sub-modules -->
+				<div class="xl:col-span-9">
+					<IndustrialComplex client:only="react" />
+				</div>
 
-            </div>
-        </main>
+				<!-- AI Auditor sidebar -->
+				<div class="xl:col-span-3">
+					<div class="bg-slate-900/80 border border-red-900/30 rounded-[2rem] p-8 shadow-2xl xl:sticky xl:top-24">
+						<h2 class="text-sm font-black mb-4 text-red-500 uppercase tracking-widest flex items-center gap-3">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+							</svg>
+							AI Auditor
+						</h2>
+						<AIAuditor client:only="react" />
+					</div>
+				</div>
 
-        <footer class="py-12 border-t border-slate-900 text-center">
-            <p class="text-[10px] font-black uppercase tracking-[0.5em] text-slate-600">
-                CINQD Industrial OS • Integrated Factory Environment • Build 1.0.5
-            </p>
-        </footer>
+			</div>
+		</main>
 
-        <style is:global>
-            html { font-family: 'Inter', sans-serif; background: #05080f; scroll-behavior: smooth; }
-            ::-webkit-scrollbar { width: 4px; }
-            ::-webkit-scrollbar-track { background: #05080f; }
-            ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
-            section { transition: all 0.3s ease; }
-            section:hover { border-color: rgba(220, 38, 38, 0.2); }
-        </style>
+		<footer class="py-12 border-t border-slate-900 text-center">
+			<p class="text-[10px] font-black uppercase tracking-[0.5em] text-slate-600">
+				CINQD Industrial OS • Integrated Factory Environment • Build 1.0.5
+			</p>
+		</footer>
+
+		<style is:global>
+			html { font-family: 'Inter', sans-serif; background: #05080f; scroll-behavior: smooth; }
+			::-webkit-scrollbar { width: 4px; }
+			::-webkit-scrollbar-track { background: #05080f; }
+			::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+		</style>
 	</body>
 </html>

@@ -15,7 +15,7 @@ export default defineConfig({
       noExternal: ['react-icons', '@google/generative-ai', 'firebase']
     },
     optimizeDeps: {
-      include: ['react', 'react-dom', 'firebase/app', 'firebase/firestore', 'firebase/app-check']
+      include: ['react', 'react-dom', 'firebase/app', 'firebase/firestore', 'firebase/auth', 'firebase/app-check']
     }
   }
 });

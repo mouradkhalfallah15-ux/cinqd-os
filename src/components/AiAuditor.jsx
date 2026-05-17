@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 import { FiCpu, FiLoader, FiZap, FiTrendingUp, FiAlertOctagon, FiGitBranch } from 'react-icons/fi';
 import { getAiAudit, getDailyCost } from '../firebase-ai.js';
 
-const AiAuditor = ({ branchId }) => { // Accepte l'ID de la branche
+const AiAuditor = ({ branchId = 'sfax' }) => {
     const [productionOrders, setProductionOrders] = useState([]);
     const [packagingStock, setPackagingStock] = useState([]);
     const [auditResult, setAuditResult] = useState(null);

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, onSnapshot, addDoc, serverTimestamp, runTransaction, doc, increment } from 'firebase/firestore';
 import { Toaster, toast } from 'react-hot-toast';
-import { FiTrash2, FiClipboard, FiAlertTriangle, FiPrinter, FiCheck, FiX } from 'react-icons/fi';
+import { FiTrash2, FiClipboard, FiAlertTriangle, FiPrinter, FiCheck } from 'react-icons/fi';
 
 const StockControl = () => {
     const [stock, setStock] = useState([]);
@@ -146,7 +146,26 @@ const StockControl = () => {
                                         <div className="flex items-center gap-4 animate-in slide-in-from-left duration-300">
                                             <div className="px-3 py-1 bg-red-500/10 text-red-500 rounded-full text-[10px] font-black">PERTE: {loss.toFixed(2)}</div>
                                             <input type="text" placeholder="برر الفرق (Justification)..." className="flex-1 bg-slate-900 border border-slate-800 p-2 rounded-lg text-xs outline-none focus:border-red-500" onChange={e => setJustifications({...justifications, [s.id]: e.target.value})}/>
-                                            <button className="p-2 bg-purple-600 rounded-lg text-white hover:bg-purple-700 transition-all"><FiCheck/></button>
+                                            <button
+                                                className="p-2 bg-purple-600 rounded-lg text-white hover:bg-purple-700 transition-all"
+                                                onClick={async () => {
+                                                    try {
+                                                        await addDoc(collection(db, 'stock_logs'), {
+                                                            type: 'Matching',
+                                                            itemId: s.id,
+                                                            itemName: s.name,
+                                                            virtualQty: virtual,
+                                                            realQty: real,
+                                                            loss: parseFloat(loss.toFixed(2)),
+                                                            justification: justifications[s.id] || '',
+                                                            createdAt: serverTimestamp()
+                                                        });
+                                                        toast.success(`تم حفظ مطابقة ${s.name}`);
+                                                    } catch {
+                                                        toast.error("خطأ في حفظ المطابقة");
+                                                    }
+                                                }}
+                                            ><FiCheck/></button>
                                         </div>
                                     )}
                                 </div>
@@ -186,7 +205,7 @@ const StockControl = () => {
                 </table>
                 <div className="mt-20 flex justify-between px-20 italic">
                     <p>إمضاء أمين المخزن</p>
-                    <p>إمضاء الإدارة (حكيم)</p>
+                    <p>إمضاء الإدارة</p>
                 </div>
             </div>
         </div>

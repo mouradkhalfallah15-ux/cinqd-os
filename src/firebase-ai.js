@@ -4,13 +4,13 @@ import { toast } from "react-hot-toast";
 // ─── Env Var Validation ───────────────────────────────────────────────────────
 const API_KEY = import.meta.env.PUBLIC_GEMINI_API_KEY;
 
-if (!API_KEY) {
-  throw new Error('Missing required env var: PUBLIC_GEMINI_API_KEY');
-}
-
 // ─── Gemini Client ────────────────────────────────────────────────────────────
-const genAI = new GoogleGenerativeAI(API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
+const model = genAI ? genAI.getGenerativeModel({ model: 'gemini-1.5-flash' }) : null;
+
+function assertModel() {
+  if (!model) throw new Error('PUBLIC_GEMINI_API_KEY is not set. AI features are unavailable.');
+}
 
 // ─── Cost Simulation ──────────────────────────────────────────────────────────
 let dailyCost = 0;
@@ -30,6 +30,7 @@ function sanitizeUserInput(input) {
 
 // ─── AI Auditeur Chat ─────────────────────────────────────────────────────────
 export async function getAIAuditeurChat(userMessage, context) {
+  assertModel();
   const { branchId, rawMaterials, productionOrders } = context;
   const safeMessage = sanitizeUserInput(userMessage);
 
@@ -64,6 +65,7 @@ ${safeMessage}
 
 // ─── AI Audit ─────────────────────────────────────────────────────────────────
 export async function getAiAudit(productionOrders, packagingStock) {
+  assertModel();
   const prompt = `
 ROLE: Auditeur Stratégique Cinqd.
 MISSION: Analyser les 5 dernières commandes: ${JSON.stringify(productionOrders)} et stocks: ${JSON.stringify(packagingStock)}.
@@ -82,6 +84,7 @@ FORMAT: Respond with valid JSON only, no markdown fences.
 
 // ─── AI Production Plan ───────────────────────────────────────────────────────
 export async function getAiPoweredProductionPlan(totalVolume, packagingOptions) {
+  assertModel();
   const prompt = `
 ROLE: Ingénieur Logistique Cinqd.
 MISSION: Plan pour ${totalVolume}L avec options ${JSON.stringify(packagingOptions)}.

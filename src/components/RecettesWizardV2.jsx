@@ -23,6 +23,15 @@ const RecettesWizardV2 = () => {
 
     const RECIPE_FORMULA = { labsa: 0.20, n70: 0.10 };
 
+    const resetWizard = () => {
+        setStep(1);
+        setProductionPlan(null);
+        setFinalOrder(null);
+        setRecipeName('Soin Nettoyant CINQD - Édition No. 5');
+        setTotalVolume(100);
+        setQualityCheck({ ph: 7.0, density: 1.02, status: 'Passed' });
+    };
+
     useEffect(() => {
         const unsubPkg = onSnapshot(collection(db, 'packaging_stock'), (snapshot) => {
             setPackagingStock(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
@@ -72,6 +81,12 @@ const RecettesWizardV2 = () => {
         setIsSaving(true);
         const labsa = rawMaterials.find(m => m.name?.toLowerCase().includes('labsa'));
         const n70 = rawMaterials.find(m => m.name?.toLowerCase().includes('n70'));
+
+        if (!labsa || !n70) {
+            toast.error("Matières premières (Labsa/N70) introuvables dans le stock.");
+            setIsSaving(false);
+            return;
+        }
 
         try {
             await runTransaction(db, async (transaction) => {

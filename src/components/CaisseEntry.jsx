@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, addDoc, onSnapshot, serverTimestamp, query, where, orderBy } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Toaster, toast } from 'react-hot-toast';
-import { FiPlus, FiShoppingBag, FiTruck, FiUsers, FiDollarSign, FiSave } from 'react-icons/fi';
+import { FiPlus, FiSave } from 'react-icons/fi';
 
 const CaisseEntry = () => {
     const [amount, setAmount] = useState('');
@@ -35,6 +35,7 @@ const CaisseEntry = () => {
 
     return (
         <div className="bg-slate-900/50 p-8 rounded-[2rem] border border-slate-800">
+            <Toaster position="top-right" />
             <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
                 <FiPlus className="text-red-500"/> تسجيل عملية بيع جديدة
             </h3>

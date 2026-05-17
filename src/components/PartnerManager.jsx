@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, addDoc, onSnapshot, query, where, serverTimestamp } from 'firebase/firestore';
 import { Toaster, toast } from 'react-hot-toast';
-import { FiUsers, FiBriefcase, FiPlus, FiPhone, FiMapPin, FiShield, FiFileText } from 'react-icons/fi';
+import { FiUsers, FiPlus } from 'react-icons/fi';
 
 const PartnerManager = () => {
     const [type, setType] = useState('Client'); // Client or Supplier
@@ -45,6 +45,7 @@ const PartnerManager = () => {
 
     return (
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800 rounded-[2.5rem] p-8 shadow-2xl">
+            <Toaster position="top-right" />
             <div className="flex items-center justify-between mb-8">
                 <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
                     <button onClick={() => setType('Client')} className={`px-6 py-2 rounded-lg font-bold text-xs transition-all ${type === 'Client' ? 'bg-blue-600 text-white' : 'text-slate-500'}`}>HRIF (CLIENTS)</button>
@@ -68,7 +69,7 @@ const PartnerManager = () => {
                 </button>
             </form>
 
-            <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
                 {partners.map(p => (
                     <div key={p.id} className="p-4 bg-slate-950/50 border border-slate-800 rounded-2xl flex items-center justify-between hover:border-slate-700 transition-all">
                         <div className="flex items-center gap-4">

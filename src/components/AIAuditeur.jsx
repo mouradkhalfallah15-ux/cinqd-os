@@ -114,7 +114,7 @@ const AIAuditeur = ({ branchId = "sfax" }) => {
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                         placeholder="اسألني أي حاجة بالدارجة..."
                         className="flex-1 bg-slate-900 border border-slate-700 text-white p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
                     />

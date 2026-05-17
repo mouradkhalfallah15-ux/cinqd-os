@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
-import { FiActivity, FiCheckCircle, FiTrendingUp, FiAlertCircle } from 'react-icons/fi';
+import { FiActivity, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
 
 const QualityOutputMonitor = () => {
     const [recentOrders, setRecentOrders] = useState([]);

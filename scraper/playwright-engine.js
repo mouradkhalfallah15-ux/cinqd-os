@@ -4,11 +4,12 @@ import { isAllowed } from './robots.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-// ── Browser singleton (reused across scrapes) ─────────────────────────────────
+// ── Browser singleton with crash recovery ────────────────────────────────────
 let _browser = null;
 
 async function getBrowser() {
-  if (_browser) return _browser;
+  if (_browser?.isConnected()) return _browser;
+  _browser = null; // discard stale handle
   _browser = await chromium.launch({
     headless:  true,
     args: [
@@ -17,18 +18,25 @@ async function getBrowser() {
       '--disable-dev-shm-usage',
       '--disable-gpu',
       '--single-process',
+      '--disable-extensions',
+      '--mute-audio',
     ],
   });
+  _browser.on('disconnected', () => { _browser = null; });
   return _browser;
 }
 
 export async function closeBrowser() {
-  if (_browser) { await _browser.close(); _browser = null; }
+  if (_browser) { try { await _browser.close(); } catch {} _browser = null; }
 }
 
 // ── Single keyword scrape via Playwright ─────────────────────────────────────
 async function scrapeKeyword(source, keyword, config) {
-  const url  = source.base_url.replace('{keyword}', encodeURIComponent(keyword));
+  // simple keyword strips special chars for sites that can't handle them (e.g. Tayara Next.js)
+  const simpleKw = keyword.replace(/[%+&]/g, ' ').trim();
+  const url = source.base_url
+    .replace('{keyword}',        encodeURIComponent(keyword))
+    .replace('{keyword_simple}', encodeURIComponent(simpleKw));
   const sels = source.selectors ?? {};
 
   const allowed = await isAllowed(url);
@@ -46,8 +54,13 @@ async function scrapeKeyword(source, keyword, config) {
 
   const page = await ctx.newPage();
 
-  // Block media to speed up loading
-  await page.route('**/*.{png,jpg,jpeg,gif,webp,mp4,woff,woff2,svg}', r => r.abort());
+  // Suppress page console noise
+  page.on('console', () => {});
+  page.on('pageerror', () => {});
+
+  // Block media + analytics to speed up loading
+  await page.route('**/*.{png,jpg,jpeg,gif,webp,mp4,woff,woff2,svg,ico}', r => r.abort());
+  await page.route('**/{gtm,gtag,analytics,hotjar,pixel,fbevents}*', r => r.abort());
 
   try {
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
@@ -82,7 +95,10 @@ async function scrapeKeyword(source, keyword, config) {
 
 // ── RSS fetch (no browser needed) ────────────────────────────────────────────
 async function scrapeRssKeyword(source, keyword) {
-  const url = source.base_url.replace('{keyword}', encodeURIComponent(keyword));
+  const simpleKw = keyword.replace(/[%+&]/g, ' ').trim();
+  const url = source.base_url
+    .replace('{keyword}',        encodeURIComponent(keyword))
+    .replace('{keyword_simple}', encodeURIComponent(simpleKw));
   try {
     const res  = await fetch(url, {
       headers: { 'User-Agent': 'CINQDBot/1.0 (+https://mkd-distrib.com)' },

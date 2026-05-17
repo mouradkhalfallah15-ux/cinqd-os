@@ -33,17 +33,18 @@
     {
       "id": "tayara-search",
       "name": "Tayara.tn — Petites annonces chimie & nettoyage",
-      "base_url": "https://www.tayara.tn/ads/?k={keyword}",
+      "base_url": "https://www.tayara.tn/ads/?k={keyword_simple}",
       "type": "playwright_search",
       "category": "classifieds",
+      "use_simple_keyword": true,
       "selectors": {
-        "items":       "[data-testid='ad-card'], .AdCard, article",
-        "title":       "h2, h3, [data-testid='ad-title']",
-        "price":       "[data-testid='ad-price'], .price, .Price",
-        "location":    "[data-testid='ad-location'], .location",
-        "description": "p, .description"
+        "items":       "[data-testid='ad-card'], article[class*='AdCard'], li[class*='item']",
+        "title":       "h2, h3, [data-testid='ad-title'], [class*='title']",
+        "price":       "[data-testid='ad-price'], [class*='price'], [class*='Price']",
+        "location":    "[data-testid='ad-location'], [class*='location']",
+        "description": "p, [class*='description']"
       },
-      "delay_ms": 4000,
+      "delay_ms": 5000,
       "max_results_per_keyword": 20
     },
     {

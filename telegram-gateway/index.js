@@ -1,8 +1,8 @@
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
-import { createServer } from 'http';
+import { createServer }  from 'http';
 
-// ── Load .env from repo root ──────────────────────────────────────────────────
+// ── Load .env ─────────────────────────────────────────────────────────────────
 try {
   const envPath = fileURLToPath(new URL('../.env', import.meta.url));
   for (const line of readFileSync(envPath, 'utf8').split('\n')) {
@@ -11,12 +11,18 @@ try {
   }
 } catch {}
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI }            from '@google/generative-ai';
+import { sendText as waSend,
+         notifyFactoryAlert as waFactory,
+         notifyCampaignAlert as waCampaign,
+         verifyWebhook }                 from '../scraper/whatsapp.js';
+import { trackLead, trackPageView }      from '../scraper/meta-pixel.js';
 
-const BOT_TOKEN       = process.env.TELEGRAM_BOT_TOKEN;
-const GEMINI_KEY      = process.env.PUBLIC_GEMINI_API_KEY;
-const ADMIN_CHAT_ID   = process.env.TELEGRAM_ADMIN_CHAT_ID || '';
-const PORT            = Number(process.env.TG_PORT) || 3001;
+const BOT_TOKEN     = process.env.TELEGRAM_BOT_TOKEN;
+const GEMINI_KEY    = process.env.PUBLIC_GEMINI_API_KEY;
+const ADMIN_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID || '';
+const ADMIN_WA_NUM  = process.env.ADMIN_WHATSAPP_NUMBER  || ''; // e.g. 21612345678
+const PORT          = Number(process.env.TG_PORT) || 3001;
 
 if (!BOT_TOKEN)  { console.error('[tg-gateway] TELEGRAM_BOT_TOKEN missing'); process.exit(1); }
 if (!GEMINI_KEY) { console.error('[tg-gateway] PUBLIC_GEMINI_API_KEY missing'); process.exit(1); }
@@ -28,35 +34,30 @@ Assist with: cleaning product manufacturing (Labsa N70, Javel, Détergent),
 production batches, raw material stock, shift management, factory alerts, and
 operations optimization. Be concise. Respond in French or Tunisian Derja.`;
 
-const sessions = new Map(); // chatId → message history (last 20)
+const sessions = new Map();
 
 async function geminiReply(chatId, userText) {
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-pro',
-    systemInstruction: SYSTEM_PROMPT,
-  });
+  const model   = genAI.getGenerativeModel({ model: 'gemini-1.5-pro', systemInstruction: SYSTEM_PROMPT });
   const history = sessions.get(chatId) || [];
   const result  = await model.startChat({ history }).sendMessage(userText);
   const reply   = result.response.text();
-  const updated = [
-    ...history,
+  sessions.set(chatId, [...history,
     { role: 'user',  parts: [{ text: userText }] },
     { role: 'model', parts: [{ text: reply }] },
-  ];
-  sessions.set(chatId, updated.slice(-20));
+  ].slice(-20));
   return reply;
 }
 
 async function tgSend(chatId, text) {
-  const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+  if (!chatId) return;
+  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' }),
-  });
-  return res.json();
+  }).catch(() => {});
 }
 
-// ── HTTP server (no express dep needed) ──────────────────────────────────────
+// ── HTTP server ───────────────────────────────────────────────────────────────
 const server = createServer(async (req, res) => {
   const chunks = [];
   for await (const chunk of req) chunks.push(chunk);
@@ -64,17 +65,28 @@ const server = createServer(async (req, res) => {
   let payload = {};
   try { payload = JSON.parse(body); } catch {}
 
-  // Health check
-  if (req.method === 'GET' && req.url === '/tg/health') {
+  const url = new URL(req.url, 'http://localhost');
+
+  // ── Health ────────────────────────────────────────────────────────────────
+  if (req.method === 'GET' && url.pathname === '/tg/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    return res.end(JSON.stringify({ ok: true, ts: new Date().toISOString() }));
+    return res.end(JSON.stringify({
+      ok: true, ts: new Date().toISOString(),
+      channels: {
+        telegram: !!BOT_TOKEN,
+        whatsapp: !!process.env.WHATSAPP_PHONE_NUMBER_ID,
+        pixel:    !!process.env.META_PIXEL_ID,
+      },
+    }));
   }
 
-  // Telegram webhook
-  if (req.method === 'POST' && req.url === '/tg/webhook') {
+  // ── Telegram webhook ──────────────────────────────────────────────────────
+  if (req.method === 'POST' && url.pathname === '/tg/webhook') {
     res.writeHead(200); res.end('ok');
     const msg = payload?.message;
     if (!msg?.text || !msg.chat?.id) return;
+    // Fire pixel Lead event for each AI interaction
+    trackLead({ ip: req.socket?.remoteAddress }).catch(() => {});
     try {
       const reply = await geminiReply(String(msg.chat.id), msg.text);
       await tgSend(msg.chat.id, reply);
@@ -84,17 +96,66 @@ const server = createServer(async (req, res) => {
     return;
   }
 
-  // Factory alert webhook (POST from internal systems → Telegram admin)
-  if (req.method === 'POST' && req.url === '/tg/factory-alert') {
+  // ── Factory alert → Telegram + WhatsApp ──────────────────────────────────
+  if (req.method === 'POST' && url.pathname === '/tg/factory-alert') {
     res.writeHead(200); res.end('ok');
-    if (!ADMIN_CHAT_ID) return;
     const { event, data, severity = 'INFO' } = payload;
     if (!event) return;
     const icon = severity === 'ERROR' ? '🚨' : severity === 'WARN' ? '⚠️' : '🏭';
-    const text = `${icon} *Factory Alert — ${severity}*\n*Event:* \`${event}\`${
+    const tgText = `${icon} *Factory Alert — ${severity}*\n*Event:* \`${event}\`${
       data ? `\n\`\`\`\n${typeof data === 'string' ? data : JSON.stringify(data, null, 2)}\n\`\`\`` : ''
     }`;
-    await tgSend(ADMIN_CHAT_ID, text).catch(() => {});
+    await tgSend(ADMIN_CHAT_ID, tgText);
+    if (ADMIN_WA_NUM) {
+      await waFactory(ADMIN_WA_NUM, { event, severity, data }).catch(() => {});
+    }
+    return;
+  }
+
+  // ── Competitor / Scaling Ad alert → Telegram + WhatsApp ──────────────────
+  if (req.method === 'POST' && url.pathname === '/tg/campaign-alert') {
+    res.writeHead(200); res.end('ok');
+    const { pageName, ageDays, spend, platform, snapshotUrl } = payload;
+    const tgText =
+      `🚨 *Scaling Ad Détecté*\n*Page:* ${pageName}\n*Durée:* ${ageDays}j\n` +
+      `*Plateforme:* ${platform}\n*Dépense:* ${spend}` +
+      (snapshotUrl ? `\n[Voir créatif](${snapshotUrl})` : '');
+    await tgSend(ADMIN_CHAT_ID, tgText);
+    if (ADMIN_WA_NUM) {
+      await waCampaign(ADMIN_WA_NUM, payload).catch(() => {});
+    }
+    return;
+  }
+
+  // ── WhatsApp Business webhook (receive messages) ──────────────────────────
+  if (req.method === 'GET' && url.pathname === '/wa/webhook') {
+    const challenge = verifyWebhook({ query: Object.fromEntries(url.searchParams) });
+    if (challenge) { res.writeHead(200); return res.end(challenge); }
+    res.writeHead(403); return res.end('forbidden');
+  }
+
+  if (req.method === 'POST' && url.pathname === '/wa/webhook') {
+    res.writeHead(200); res.end('ok');
+    // Incoming WhatsApp message → Gemini reply
+    const entry   = payload?.entry?.[0]?.changes?.[0]?.value;
+    const waMsg   = entry?.messages?.[0];
+    if (!waMsg?.text?.body || !waMsg.from) return;
+    try {
+      const reply = await geminiReply(`wa:${waMsg.from}`, waMsg.text.body);
+      await waSend(waMsg.from, reply);
+    } catch (e) {
+      await waSend(waMsg.from, `⚠️ Erreur: ${e.message}`).catch(() => {});
+    }
+    return;
+  }
+
+  // ── Meta Pixel server-side event proxy ────────────────────────────────────
+  if (req.method === 'POST' && url.pathname === '/meta/event') {
+    res.writeHead(200); res.end('ok');
+    const { eventName, sourceUrl, ...opts } = payload;
+    if (!eventName) return;
+    const { sendPixelEvents, buildEvent } = await import('../scraper/meta-pixel.js');
+    sendPixelEvents([buildEvent(eventName, { sourceUrl, ...opts })]).catch(() => {});
     return;
   }
 
@@ -103,7 +164,10 @@ const server = createServer(async (req, res) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`[tg-gateway] listening on 0.0.0.0:${PORT}`);
-  console.log(`[tg-gateway] webhook → /tg/webhook`);
-  console.log(`[tg-gateway] factory → /tg/factory-alert`);
-  console.log(`[tg-gateway] health  → /tg/health`);
+  console.log(`[tg-gateway] /tg/webhook        — Telegram → Gemini`);
+  console.log(`[tg-gateway] /tg/factory-alert  — Factory → Telegram + WhatsApp`);
+  console.log(`[tg-gateway] /tg/campaign-alert — Spy → Telegram + WhatsApp`);
+  console.log(`[tg-gateway] /wa/webhook        — WhatsApp → Gemini`);
+  console.log(`[tg-gateway] /meta/event        — Server-side Pixel events`);
+  console.log(`[tg-gateway] /tg/health         — Status`);
 });

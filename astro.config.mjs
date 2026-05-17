@@ -12,7 +12,11 @@ export default defineConfig({
   output: 'static',
   server: {
     port: 4325,
-    host: true
+    host: true,
+  },
+  preview: {
+    port: 3000,
+    host: true,
   },
   vite: {
     resolve: {
@@ -25,6 +29,13 @@ export default defineConfig({
     },
     optimizeDeps: {
       include: ['react', 'react-dom', 'firebase/app', 'firebase/firestore', 'firebase/auth', 'firebase/app-check']
-    }
+    },
+    // Allow all Host headers when served behind a reverse proxy (Vite 5 security)
+    preview: {
+      allowedHosts: true,
+    },
+    server: {
+      allowedHosts: true,
+    },
   }
 });

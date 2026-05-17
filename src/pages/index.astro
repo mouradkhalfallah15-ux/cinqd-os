@@ -17,11 +17,7 @@ import AiAuditor from '../components/AiAuditor';
 
 		<!-- Auth guard: redirect to login if unauthenticated -->
 		<script>
-			import { auth } from '../firebase.js';
-			import { onAuthStateChanged } from 'firebase/auth';
-			onAuthStateChanged(auth, (user) => {
-				if (!user) window.location.replace('/admin/login');
-			});
+			fetch('/api/auth/verify').then(r=>r.json()).then(d=>{if(!d.authenticated)window.location.href='/admin/login';}).catch(()=>{window.location.href='/admin/login';});
 		</script>
 
 		<header class="border-b border-slate-800/60 bg-slate-900/40 backdrop-blur-md sticky top-0 z-50">

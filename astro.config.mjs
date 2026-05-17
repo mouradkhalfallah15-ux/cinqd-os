@@ -12,6 +12,7 @@ export default defineConfig({
   integrations: [tailwind(), react()],
   output: 'server',
   adapter: node({ mode: 'standalone' }),
+  security: { checkOrigin: false },
   server: {
     port: 4325,
     host: true,

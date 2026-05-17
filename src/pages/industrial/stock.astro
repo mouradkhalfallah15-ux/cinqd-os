@@ -14,11 +14,7 @@ import StockManagement from '../../components/StockManagement.jsx';
 	<body class="bg-[#05080f] text-slate-200 font-sans min-h-screen">
 
 		<script>
-			import { auth } from '../../firebase.js';
-			import { onAuthStateChanged } from 'firebase/auth';
-			onAuthStateChanged(auth, (user) => {
-				if (!user) window.location.replace('/admin/login');
-			});
+			fetch('/api/auth/verify').then(r=>r.json()).then(d=>{if(!d.authenticated)window.location.href='/admin/login';}).catch(()=>{window.location.href='/admin/login';});
 		</script>
 
 		<header class="border-b border-slate-800/60 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50">

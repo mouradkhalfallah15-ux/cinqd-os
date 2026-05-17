@@ -1,11 +1,7 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
-import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 
-// Firebase only initialises in the browser — Astro pre-renders pages in Node.js
-// where import.meta.env vars are absent. Guarding here prevents the build-time throw.
-let db, app, auth;
+let db, app;
 
 if (typeof window !== 'undefined') {
   const required = {
@@ -17,27 +13,8 @@ if (typeof window !== 'undefined') {
     appId:             import.meta.env.PUBLIC_FIREBASE_APP_ID,
   };
 
-  const missing = Object.entries(required)
-    .filter(([, v]) => !v)
-    .map(([k]) => `PUBLIC_FIREBASE_${k.replace(/([A-Z])/g, '_$1').toUpperCase()}`);
-
-  if (missing.length > 0) {
-    throw new Error(`Missing required Firebase env vars: ${missing.join(', ')}`);
-  }
-
-  app  = getApps().length ? getApps()[0] : initializeApp(required);
-  db   = getFirestore(app);
-  auth = getAuth(app);
-
-  const siteKey = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY;
-  if (!siteKey) {
-    console.warn('[Firebase] PUBLIC_RECAPTCHA_SITE_KEY not set — App Check disabled.');
-  } else {
-    initializeAppCheck(app, {
-      provider: new ReCaptchaV3Provider(siteKey),
-      isTokenAutoRefreshEnabled: true,
-    });
-  }
+  app = getApps().length ? getApps()[0] : initializeApp(required);
+  db  = getFirestore(app);
 }
 
-export { db, app, auth };
+export { db, app };

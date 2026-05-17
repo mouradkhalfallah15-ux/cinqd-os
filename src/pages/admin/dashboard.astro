@@ -1,32 +1,15 @@
 ---
-import CinqdDashboard from '../../components/CinqdDashboard.jsx';
-import AffiliateAdminConfig from '../../idx/admin/components/AffiliateAdminConfig.jsx';
-import AIExecutiveChat from '../../components/AIExecutiveChat.jsx';
+import CinqdDashboard from '@/components/CinqdDashboard.jsx';
 ---
 
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>لوحة تحكم CINQD</title>
-    <style is:global>
-      @import url('https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap');
-      body {
-        font-family: 'Almarai', sans-serif;
-        background-color: #030712;
-        margin: 0;
-        padding: 0;
-      }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CINQD Industrial OS</title>
 </head>
-<body class="bg-[#030712]">
-    <CinqdDashboard client:load />
-
-    <!-- Affiliate Admin Config — loaded after main dashboard -->
-    <div dir="ltr" class="border-t border-slate-800 px-6 py-10 max-w-5xl mx-auto">
-        <AffiliateAdminConfig client:only="react" />
-    </div>
-    <AIExecutiveChat client:only="react" requireAuth={true} />
+<body>
+  <CinqdDashboard client:load />
 </body>
 </html>

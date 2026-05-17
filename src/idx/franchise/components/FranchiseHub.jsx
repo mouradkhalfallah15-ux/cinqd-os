@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { collection, onSnapshot, query, orderBy, doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../../../firebase';
+import { db } from '../../../firebase';
 import POSProfile from './POSProfile.jsx';
 import MicroFactoryProfile from './MicroFactoryProfile.jsx';
 import { FiShoppingCart, FiCpu, FiMapPin, FiLogOut, FiChevronRight } from 'react-icons/fi';
@@ -23,7 +22,7 @@ const FranchiseHub = () => {
   const [selected, setSelected]   = useState(null);  // { id, profileType }
 
   useEffect(() => {
-    return onAuthStateChanged(auth, (u) => {
+    fetch('/api/auth/verify').then(r=>r.json()).then(d=>{ const u = d.authenticated ? d.user : null; if (!u) { window.location.href='/admin/login'; return; }
       setUser(u);
       if (u === null) window.location.replace('/admin/login');
     });
@@ -58,7 +57,7 @@ const FranchiseHub = () => {
               <span className="text-xs text-slate-500">· {label}</span>
             </div>
           </div>
-          <button onClick={() => signOut(auth)} className="text-slate-500 hover:text-red-400 text-xs flex items-center gap-1 transition-colors">
+          <button onClick={() => fetch('/api/auth/logout',{method:'POST'}).then(()=>{window.location.href='/admin/login';})} className="text-slate-500 hover:text-red-400 text-xs flex items-center gap-1 transition-colors">
             <FiLogOut /> Déconnexion
           </button>
         </header>
@@ -77,7 +76,7 @@ const FranchiseHub = () => {
             <h1 className="text-3xl font-extrabold text-white">Réseau Franchise CINQD</h1>
             <p className="text-slate-400 mt-1 text-sm">Déployez et gérez vos points de vente et micro-usines.</p>
           </div>
-          <button onClick={() => signOut(auth)} className="text-slate-500 hover:text-red-400 text-xs flex items-center gap-1 transition-colors">
+          <button onClick={() => fetch('/api/auth/logout',{method:'POST'}).then(()=>{window.location.href='/admin/login';})} className="text-slate-500 hover:text-red-400 text-xs flex items-center gap-1 transition-colors">
             <FiLogOut /> Déconnexion
           </button>
         </div>

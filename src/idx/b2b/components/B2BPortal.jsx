@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '../../../firebase';
+import { db } from '../../../firebase';
 import EnterpriseTerms from './EnterpriseTerms.jsx';
 import ContractManager from './ContractManager.jsx';
 import { FiBriefcase, FiFileText, FiShoppingCart, FiUsers, FiBarChart2, FiLogOut, FiShield } from 'react-icons/fi';
@@ -34,7 +33,7 @@ const B2BPortal = () => {
   const [checkingTerms, setCheckingTerms] = useState(true);
 
   useEffect(() => {
-    return onAuthStateChanged(auth, (u) => {
+    fetch('/api/auth/verify').then(r=>r.json()).then(d=>{ const u = d.authenticated ? d.user : null; if (!u) { window.location.href='/admin/login'; return; }
       setUser(u);
       if (u === null) window.location.replace('/admin/login');
     });
@@ -105,7 +104,7 @@ const B2BPortal = () => {
 
         <div className="p-3 border-t border-slate-800">
           <button
-            onClick={() => signOut(auth)}
+            onClick={() => fetch('/api/auth/logout',{method:'POST'}).then(()=>{window.location.href='/admin/login';})}
             className="w-full flex items-center gap-2 text-slate-500 hover:text-red-400 text-xs px-3 py-2 rounded-lg transition-colors"
           >
             <FiLogOut /> Déconnexion

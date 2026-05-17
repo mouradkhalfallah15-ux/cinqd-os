@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../firebase.js';
 import { FiUsers, FiMapPin, FiTrendingUp, FiDollarSign, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
 
 const StatCard = ({ icon, label, value, sub }) => (
@@ -39,7 +37,7 @@ const FranchiseDashboard = () => {
   const [franchises] = useState(getMockFranchises());
 
   useEffect(() => {
-    return onAuthStateChanged(auth, (u) => {
+    fetch('/api/auth/verify').then(r=>r.json()).then(d=>{ const u = d.authenticated ? d.user : null; if (!u) { window.location.href='/admin/login'; return; }
       setUser(u);
       if (!u) window.location.replace('/admin/login');
     });

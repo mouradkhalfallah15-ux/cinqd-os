@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/firebase';
 import { FiMessageSquare, FiX, FiSend, FiCpu } from 'react-icons/fi';
 
 // ── Role registry ─────────────────────────────────────────────────────────────
@@ -103,7 +101,7 @@ export default function AIExecutiveChat({ requireAuth = true }) {
   useEffect(() => {
     setRole(detectRole());
     if (!requireAuth) return;
-    return onAuthStateChanged(auth, u => setAuthed(!!u));
+    fetch('/api/auth/verify').then(r=>r.json()).then(d=>setAuthed(d.authenticated)).catch(()=>setAuthed(false));
   }, []);
 
   useEffect(() => {

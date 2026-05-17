@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/firebase';
 
 const Gate = () => (
   <div style={{
@@ -21,26 +19,21 @@ const Gate = () => (
   </div>
 );
 
-/**
- * Wraps a component so it only renders for authenticated Firebase users.
- * Unauthenticated visitors are immediately redirected to `redirectTo`.
- *
- * Usage (gateway level):
- *   export const AffiliateDashboard = withAuth(AffiliateDashboardBase);
- */
 export function withAuth(Component, { redirectTo = '/admin/login' } = {}) {
   const Protected = (props) => {
-    // 'pending' while Firebase resolves, 'ok' when authenticated
     const [ready, setReady] = useState(false);
 
     useEffect(() => {
-      return onAuthStateChanged(auth, (user) => {
-        if (user) {
-          setReady(true);
-        } else {
-          window.location.replace(redirectTo);
-        }
-      });
+      fetch('/api/auth/verify')
+        .then(r => r.json())
+        .then(d => {
+          if (d.authenticated) {
+            setReady(true);
+          } else {
+            window.location.replace(redirectTo);
+          }
+        })
+        .catch(() => window.location.replace(redirectTo));
     }, []);
 
     if (!ready) return <Gate />;

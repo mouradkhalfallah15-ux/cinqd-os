@@ -1,6 +1,10 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import react from '@astrojs/react';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,6 +15,11 @@ export default defineConfig({
     host: true
   },
   vite: {
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+      },
+    },
     ssr: {
       noExternal: ['react-icons', '@google/generative-ai', 'firebase']
     },

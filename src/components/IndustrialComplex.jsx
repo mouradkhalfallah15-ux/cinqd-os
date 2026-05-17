@@ -6,7 +6,7 @@ import {
 } from 'firebase/firestore';
 import { Toaster, toast } from 'react-hot-toast';
 import {
-  FiBox, FiFlask, FiCpu, FiShield, FiPlus, FiTrash2,
+  FiBox, FiDroplet, FiCpu, FiShield, FiPlus, FiTrash2,
   FiSave, FiX, FiAlertTriangle, FiPackage, FiTag,
   FiInbox, FiClipboard, FiCheck, FiAlertCircle, FiActivity,
   FiCode, FiChevronDown, FiChevronUp, FiArrowRight,
@@ -18,7 +18,7 @@ const APPEARANCES = ['Limpide', 'Légèrement trouble', 'Trouble', 'Opaque'];
 
 const MODULE_TABS = [
   { id: 'stock',      label: 'Stock',            Icon: FiBox,      accent: 'blue'   },
-  { id: 'formula',    label: 'Formule',           Icon: FiFlask,    accent: 'purple' },
+  { id: 'formula',    label: 'Formule',           Icon: FiDroplet,  accent: 'purple' },
   { id: 'production', label: 'Ordre de Prod.',    Icon: FiCpu,      accent: 'red'    },
   { id: 'qa',         label: 'Assurance Qualité', Icon: FiShield,   accent: 'green'  },
 ];

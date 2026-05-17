@@ -18,6 +18,9 @@ export const FranchiseHub         = withAuth(FranchiseHubBase);
 export const B2BPortal            = withAuth(B2BPortalBase);
 export const AffiliateAdminConfig = withAuth(AffiliateAdminConfigBase);
 
+// ── AI Executive Officer (shared, role auto-detected) ─────────────────────────
+export { default as AIExecutiveChat } from '../components/AIExecutiveChat.jsx';
+
 // ── Shared UI components (no auth required) ───────────────────────────────────
 export { default as TierBadge      } from './affiliate/components/TierBadge.jsx';
 export { default as WalletPanel    } from './affiliate/components/WalletPanel.jsx';

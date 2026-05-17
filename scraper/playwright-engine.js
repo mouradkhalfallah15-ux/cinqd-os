@@ -17,9 +17,10 @@ async function getBrowser() {
       '--disable-setuid-sandbox',
       '--disable-dev-shm-usage',
       '--disable-gpu',
-      '--single-process',
       '--disable-extensions',
       '--mute-audio',
+      '--disable-background-networking',
+      '--js-flags=--max-old-space-size=256',
     ],
   });
   _browser.on('disconnected', () => { _browser = null; });
@@ -129,19 +130,22 @@ async function scrapeRssKeyword(source, keyword) {
 export async function scrapeSourceAllKeywords(source, keywords) {
   const allRecords = [];
 
-  for (const keyword of keywords) {
-    console.log(`[playwright] ${source.id} ← "${keyword}"`);
+  // Fresh browser per source — prevents cascade crashes
+  await closeBrowser();
+
+  for (let i = 0; i < keywords.length; i++) {
+    const keyword = keywords[i];
+    console.log(`[playwright] ${source.id} ← "${keyword}" (${i + 1}/${keywords.length})`);
     const records = source.type === 'rss'
       ? await scrapeRssKeyword(source, keyword)
       : await scrapeKeyword(source, keyword, source);
 
     allRecords.push(...records);
 
-    // inter-keyword polite delay
-    if (keywords.indexOf(keyword) < keywords.length - 1) {
-      await sleep(source.delay_ms ?? 4000);
-    }
+    if (i < keywords.length - 1) await sleep(source.delay_ms ?? 4000);
   }
+
+  await closeBrowser(); // release after source is done
 
   return {
     sourceId:   source.id,

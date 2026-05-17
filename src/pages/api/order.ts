@@ -148,7 +148,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // 3. Send 'Purchase' event to Meta Conversions API (CAPI)
     const META_PIXEL_ID = process.env.META_PIXEL_ID;
-    const META_ACCESS_TOKEN = process.env.META_ACCESS_TOKEN;
+    const META_ACCESS_TOKEN = process.env.META_PIXEL_ACCESS_TOKEN;
 
     if (META_PIXEL_ID && META_ACCESS_TOKEN) {
       await fetch(`https://graph.facebook.com/v19.0/${META_PIXEL_ID}/events`, {

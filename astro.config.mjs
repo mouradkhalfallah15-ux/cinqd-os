@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import react from '@astrojs/react';
+import node from '@astrojs/node';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
@@ -9,7 +10,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // https://astro.build/config
 export default defineConfig({
   integrations: [tailwind(), react()],
-  output: 'static',
+  output: 'server',
+  adapter: node({ mode: 'standalone' }),
   server: {
     port: 4325,
     host: true,

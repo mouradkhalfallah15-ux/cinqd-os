@@ -10,49 +10,65 @@ try {
   }
 } catch {}
 
-import { TARGETS, SCHEDULE_INTERVAL_MS } from './targets.js';
-import { scrapeTarget } from './engine.js';
+import { scrapeSourceAllKeywords, closeBrowser } from './playwright-engine.js';
 import { forwardToN8N } from './pipeline.js';
+
+// Load config from repo
+const configPath = fileURLToPath(new URL('../src/config/scraper_targets.json', import.meta.url));
+const CONFIG     = JSON.parse(readFileSync(configPath, 'utf8'));
+
+const KEYWORDS   = CONFIG.keywords;
+const SOURCES    = CONFIG.sources;
+const INTERVAL   = (CONFIG.schedule_interval_minutes ?? 60) * 60 * 1000;
 
 let cycleCount = 0;
 
 async function runCycle() {
   cycleCount++;
-  console.log(`\n[scraper] ── Cycle #${cycleCount} started at ${new Date().toISOString()}`);
+  const ts = new Date().toISOString();
+  console.log(`\n[scraper] ══ Cycle #${cycleCount} | ${ts} ══`);
+  console.log(`[scraper] ${SOURCES.length} sources × ${KEYWORDS.length} keywords`);
 
   const summary = [];
 
-  for (const target of TARGETS) {
-    console.log(`[scraper] → ${target.name}`);
+  for (const source of SOURCES) {
+    console.log(`\n[scraper] ▶ ${source.name}`);
     try {
-      const payload = await scrapeTarget(target);
-      if (!payload) {
-        summary.push({ id: target.id, status: 'blocked_robots', count: 0 });
-        continue;
-      }
-
+      const payload   = await scrapeSourceAllKeywords(source, KEYWORDS);
       const fwdResult = await forwardToN8N(payload);
-      const totalFwd  = Array.isArray(fwdResult)
+      const forwarded = Array.isArray(fwdResult)
         ? fwdResult.filter(r => r.ok).reduce((s, r) => s + r.batch, 0)
         : 0;
+      const n8nOk = Array.isArray(fwdResult) && fwdResult.some(r => r.ok);
 
-      summary.push({ id: target.id, status: 'ok', scraped: payload.count, forwarded: totalFwd });
-      console.log(`[scraper]   ✓ ${payload.count} records scraped, ${totalFwd} forwarded to n8n`);
+      summary.push({
+        source:    source.id,
+        status:    'ok',
+        scraped:   payload.count,
+        forwarded,
+        n8n:       n8nOk ? '✓' : '✗',
+      });
+      console.log(`[scraper]   ✓ ${payload.count} records → n8n: ${n8nOk ? 'ok' : 'not yet live'}`);
     } catch (err) {
-      summary.push({ id: target.id, status: 'error', error: err.message });
-      console.error(`[scraper]   ✗ ${target.id}: ${err.message}`);
+      summary.push({ source: source.id, status: 'error', error: err.message });
+      console.error(`[scraper]   ✗ ${source.id}: ${err.message}`);
     }
   }
 
-  console.log(`[scraper] ── Cycle #${cycleCount} complete`);
+  await closeBrowser(); // release Chromium after each cycle
+
+  console.log(`\n[scraper] ══ Cycle #${cycleCount} complete ══`);
   console.table(summary);
-  return summary;
 }
 
-// ── Start ─────────────────────────────────────────────────────────────────────
-console.log(`[scraper] CINQD Scraper Engine starting`);
-console.log(`[scraper] ${TARGETS.length} targets | cycle interval: ${SCHEDULE_INTERVAL_MS / 60000}min`);
+// ── Graceful shutdown ────────────────────────────────────────────────────────
+process.on('SIGTERM', async () => { await closeBrowser(); process.exit(0); });
+process.on('SIGINT',  async () => { await closeBrowser(); process.exit(0); });
 
-runCycle(); // immediate first run
+// ── Start ────────────────────────────────────────────────────────────────────
+console.log(`[scraper] CINQD Playwright Scraper Engine — v${CONFIG.version}`);
+console.log(`[scraper] Keywords: ${KEYWORDS.join(' | ')}`);
+console.log(`[scraper] Interval: ${CONFIG.schedule_interval_minutes}min`);
 
-setInterval(runCycle, SCHEDULE_INTERVAL_MS);
+runCycle();
+setInterval(runCycle, INTERVAL);

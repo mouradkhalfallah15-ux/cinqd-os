@@ -1,0 +1,112 @@
+{
+  "version": "2026.1",
+  "description": "CINQD market intelligence — Tunisian chemical & detergent industry",
+  "schedule_interval_minutes": 60,
+
+  "keywords": [
+    "SLES 70% Tunisie",
+    "Texapon bulk price",
+    "Sulfonic Acid wholesale",
+    "Polyquaternium-7",
+    "PVA liquid iron effect",
+    "Sodium Bicarbonate whitening grade",
+    "viscosity enhancers",
+    "Detergent plastic bottles wholesale",
+    "HDPE containers",
+    "grossiste produit de nettoyage"
+  ],
+
+  "behavioral_intents": [
+    {
+      "intent": "consumer_pricing",
+      "description": "Public consumer requests for detergent pricing",
+      "signals": ["prix", "tarif", "combien", "achat", "livraison", "kg", "litre"]
+    },
+    {
+      "intent": "bulk_b2b",
+      "description": "Commercial bulk cleaning supplier requests",
+      "signals": ["gros", "grossiste", "wholesale", "lot", "palette", "tonne", "barrel", "distributeur", "B2B"]
+    }
+  ],
+
+  "sources": [
+    {
+      "id": "tayara-search",
+      "name": "Tayara.tn — Petites annonces chimie & nettoyage",
+      "base_url": "https://www.tayara.tn/ads/?k={keyword}",
+      "type": "playwright_search",
+      "category": "classifieds",
+      "selectors": {
+        "items":       "[data-testid='ad-card'], .AdCard, article",
+        "title":       "h2, h3, [data-testid='ad-title']",
+        "price":       "[data-testid='ad-price'], .price, .Price",
+        "location":    "[data-testid='ad-location'], .location",
+        "description": "p, .description"
+      },
+      "delay_ms": 4000,
+      "max_results_per_keyword": 20
+    },
+    {
+      "id": "annuaire-tn",
+      "name": "PagesJaunes TN — Annuaire fournisseurs chimie",
+      "base_url": "https://www.pagesjaunes.tn/recherche?q={keyword}&l=Tunisie",
+      "type": "playwright_search",
+      "category": "b2b_directory",
+      "selectors": {
+        "items":       ".company-card, .listing-item, [class*='company']",
+        "title":       "h2, h3, .company-name",
+        "phone":       ".phone, [class*='phone'], [href^='tel:']",
+        "address":     ".address, [class*='address']",
+        "description": ".description, .activity"
+      },
+      "delay_ms": 5000,
+      "max_results_per_keyword": 15
+    },
+    {
+      "id": "tunisianet-products",
+      "name": "Tunisianet — Catalogue produits nettoyage",
+      "base_url": "https://www.tunisianet.com.tn/recherche?s={keyword}",
+      "type": "playwright_search",
+      "category": "pricing",
+      "selectors": {
+        "items":       ".product-miniature, .ajax_block_product",
+        "title":       ".product-title a, h3",
+        "price":       ".price, .product-price",
+        "brand":       ".manufacturer, .brand",
+        "link":        ".product-title a"
+      },
+      "delay_ms": 4000,
+      "max_results_per_keyword": 20
+    },
+    {
+      "id": "industrie-tn",
+      "name": "Industrie.com.tn — Fournisseurs chimie Tunisie",
+      "base_url": "https://www.industrie.com.tn/index.php?option=com_search&searchword={keyword}",
+      "type": "playwright_search",
+      "category": "b2b_directory",
+      "selectors": {
+        "items":       ".search-result, tr.row, .cat-list-row",
+        "title":       "a, h3, td:nth-child(1)",
+        "description": "p, td:nth-child(2)",
+        "link":        "a"
+      },
+      "delay_ms": 5000,
+      "max_results_per_keyword": 15
+    },
+    {
+      "id": "rss-chimie-tn",
+      "name": "RSS — Actualités chimie & détergents Tunisie",
+      "base_url": "https://news.google.com/rss/search?q={keyword}+Tunisie&hl=fr&gl=TN&ceid=TN:fr",
+      "type": "rss",
+      "category": "news",
+      "delay_ms": 2000,
+      "max_results_per_keyword": 10
+    }
+  ],
+
+  "pipeline": {
+    "n8n_endpoint": "https://n8n.mkd-distrib.com/webhook/cinqd-ai-gate",
+    "batch_size": 50,
+    "timeout_ms": 30000
+  }
+}

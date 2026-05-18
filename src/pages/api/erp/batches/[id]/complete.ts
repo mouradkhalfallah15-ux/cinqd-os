@@ -22,11 +22,11 @@ export const POST: APIRoute = async ({ request, params }) => {
       'SELECT * FROM erp_formula_lines WHERE formula_id=$1', [batch.formula_id]
     );
     const { rows: [formula] } = await client.query('SELECT * FROM erp_formulas WHERE id=$1', [batch.formula_id]);
-    const ratio = qty_produced / formula.output_qty;
+    const ratio = qty_produced / Number(formula.output_qty);
     for (const fl of formulaLines) {
-      const consumeQty = fl.qty * ratio;
+      const consumeQty = Number(fl.qty) * ratio;
       const { rows: [item] } = await client.query('SELECT * FROM erp_stock_items WHERE id=$1 FOR UPDATE', [fl.item_id]);
-      if (!item || item.qty_on_hand < consumeQty) {
+      if (!item || Number(item.qty_on_hand) < consumeQty) {
         await client.query('ROLLBACK');
         return json({ error: `Insufficient stock for ${item?.name || fl.item_id}: need ${consumeQty.toFixed(2)}` }, 400);
       }

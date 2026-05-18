@@ -17,7 +17,7 @@ export const POST: APIRoute = async ({ request, params }) => {
       if (!line.item_id || !line.qty_delivered) continue;
       const { rows: [item] } = await client.query('SELECT * FROM erp_stock_items WHERE id=$1 FOR UPDATE', [line.item_id]);
       if (!item) continue;
-      if (item.qty_on_hand < line.qty_delivered) {
+      if (Number(item.qty_on_hand) < Number(line.qty_delivered)) {
         await client.query('ROLLBACK');
         return json({ error: `Insufficient stock for ${item.name}` }, 400);
       }

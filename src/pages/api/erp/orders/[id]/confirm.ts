@@ -24,10 +24,10 @@ export const POST: APIRoute = async ({ request, params }) => {
         'SELECT * FROM erp_stock_items WHERE id=$1 FOR UPDATE', [line.item_id]
       );
       if (!item) continue;
-      const available = item.qty_on_hand - item.qty_reserved;
-      if (available < line.qty) {
+      const available = Number(item.qty_on_hand) - Number(item.qty_reserved);
+      if (available < Number(line.qty)) {
         await client.query('ROLLBACK');
-        return json({ error: `Insufficient stock for ${item.name}: need ${line.qty}, available ${available}` }, 400);
+        return json({ error: `Insufficient stock for ${item.name}: need ${line.qty}, available ${available.toFixed(3)}` }, 400);
       }
       await client.query(
         'UPDATE erp_stock_items SET qty_reserved=qty_reserved+$1, updated_at=now() WHERE id=$2',

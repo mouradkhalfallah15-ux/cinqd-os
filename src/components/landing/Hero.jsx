@@ -17,7 +17,10 @@ export default function Hero() {
                 {/* Product space */}
             </div>
         </div>
-        <button className="bg-blue-600 text-white font-bold py-4 px-8 rounded-lg mt-8 text-xl animate-pulse">
+        <button
+          className="bg-blue-600 text-white font-bold py-4 px-8 rounded-lg mt-8 text-xl animate-pulse"
+          onClick={() => document.getElementById('checkout')?.scrollIntoView({ behavior: 'smooth' })}
+        >
           COMMANDER MAINTENANT
         </button>
       </main>

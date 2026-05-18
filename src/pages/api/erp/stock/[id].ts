@@ -13,7 +13,7 @@ export const GET: APIRoute = async ({ request, params }) => {
 export const PATCH: APIRoute = async ({ request, params }) => {
   if (!await requireAuth(request)) return unauth();
   const body = await request.json();
-  const allowed = ['name','category','unit','reorder_level','cost_per_unit'];
+  const allowed = ['name','category','unit','reorder_level','cost_per_unit','image_url'];
   const sets: string[] = [];
   const vals: unknown[] = [];
   let idx = 1;

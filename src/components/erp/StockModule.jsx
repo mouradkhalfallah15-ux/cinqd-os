@@ -8,7 +8,7 @@ export default function StockModule() {
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [showRestock, setShowRestock] = useState(null);
-  const [form, setForm] = useState({ sku: '', name: '', category: 'raw', unit: 'L', qty_on_hand: 0, reorder_level: 0, cost_per_unit: 0 });
+  const [form, setForm] = useState({ sku: '', name: '', category: 'raw', unit: 'L', qty_on_hand: 0, reorder_level: 0, cost_per_unit: 0, image_url: '' });
   const [restockForm, setRestockForm] = useState({ qty: '', note: '' });
   const [movements, setMovements] = useState([]);
   const [showMov, setShowMov] = useState(false);
@@ -26,7 +26,7 @@ export default function StockModule() {
     e.preventDefault();
     await fetch('/api/erp/stock/items', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
     setShowAdd(false);
-    setForm({ sku: '', name: '', category: 'raw', unit: 'L', qty_on_hand: 0, reorder_level: 0, cost_per_unit: 0 });
+    setForm({ sku: '', name: '', category: 'raw', unit: 'L', qty_on_hand: 0, reorder_level: 0, cost_per_unit: 0, image_url: '' });
     load();
   }
 
@@ -82,6 +82,11 @@ export default function StockModule() {
                 className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-xs outline-none focus:border-cyan-500" />
             </div>
           ))}
+          <div className="col-span-2">
+            <label className="text-[10px] text-slate-500 uppercase tracking-widest block mb-1">Image URL</label>
+            <input value={form.image_url} onChange={e => setForm(f => ({...f,image_url:e.target.value}))} placeholder="https://..."
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-xs outline-none focus:border-cyan-500" />
+          </div>
           <div>
             <label className="text-[10px] text-slate-500 uppercase tracking-widest block mb-1">Category</label>
             <select value={form.category} onChange={e => setForm(f => ({...f,category:e.target.value}))}
@@ -139,7 +144,7 @@ export default function StockModule() {
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b border-slate-800">
-              {['SKU','Name','Cat','Unit','On Hand','Reserved','Reorder','Cost',''].map(h => (
+              {['','SKU','Name','Cat','Unit','On Hand','Reserved','Reorder','Cost',''].map(h => (
                 <th key={h} className="text-left text-[10px] text-slate-500 uppercase tracking-widest pb-2 pr-3">{h}</th>
               ))}
             </tr>
@@ -149,6 +154,12 @@ export default function StockModule() {
               const isLow = Number(item.qty_on_hand) <= Number(item.reorder_level);
               return (
                 <tr key={item.id} className={`border-b border-slate-800/50 hover:bg-slate-800/20 ${isLow ? 'text-red-400' : 'text-slate-300'}`}>
+                  <td className="py-2 pr-3">
+                    {item.image_url
+                      ? <img src={item.image_url} alt={item.name} className="w-8 h-8 rounded-lg object-cover border border-slate-700" />
+                      : <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-600 text-xs">?</div>
+                    }
+                  </td>
                   <td className="py-2 pr-3 font-mono">{item.sku}</td>
                   <td className="py-2 pr-3 text-white">{item.name}</td>
                   <td className="py-2 pr-3">

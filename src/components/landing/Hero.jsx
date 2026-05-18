@@ -1,5 +1,7 @@
 import React from 'react';
 
+const PRODUCT_IMG = 'https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?w=600&q=85';
+
 export default function Hero() {
   const scroll = () => document.getElementById('checkout')?.scrollIntoView({ behavior: 'smooth' });
 
@@ -62,17 +64,17 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Product visual */}
+          {/* Product photo */}
           <div className="order-1 md:order-2 flex justify-center">
             <div className="relative">
-              <div className="w-72 h-72 md:w-96 md:h-96 bg-gradient-to-br from-orange-100 to-orange-50 rounded-3xl flex items-center justify-center shadow-xl shadow-orange-100">
-                <div className="text-center">
-                  <div className="text-8xl mb-4">🧴</div>
-                  <div className="font-black text-gray-800 text-lg">CINQD</div>
-                  <div className="text-orange-500 font-bold text-sm">Multi-Usage Premium</div>
-                </div>
+              <div className="w-72 h-72 md:w-96 md:h-96 rounded-3xl overflow-hidden shadow-xl shadow-orange-100 ring-4 ring-orange-100">
+                <img
+                  src={PRODUCT_IMG}
+                  alt="CINQD Multi-Usage Premium Clean"
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                />
               </div>
-              {/* Badges */}
               <div className="absolute -top-3 -right-3 bg-red-500 text-white text-xs font-black px-3 py-1.5 rounded-full shadow-md">
                 🔥 الأكثر مبيعاً
               </div>

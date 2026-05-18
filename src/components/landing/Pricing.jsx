@@ -11,6 +11,7 @@ const PACKS = [
     per: '480 DA / زجاجة',
     badge: null,
     color: 'border-gray-200',
+    img: 'https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?w=300&q=80',
   },
   {
     id: 'x2',
@@ -22,6 +23,7 @@ const PACKS = [
     per: '450 DA / زجاجة',
     badge: '🔥 الأكثر طلباً',
     color: 'border-orange-400',
+    img: 'https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?w=300&q=80',
   },
   {
     id: 'x3',
@@ -33,6 +35,7 @@ const PACKS = [
     per: '430 DA / زجاجة',
     badge: '💰 أوفر سعر',
     color: 'border-gray-200',
+    img: 'https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?w=300&q=80',
   },
 ];
 
@@ -57,34 +60,49 @@ export default function Pricing() {
           {PACKS.map(pack => (
             <div key={pack.id}
               onClick={() => selectPack(pack)}
-              className={`relative bg-white border-2 ${pack.color} rounded-2xl p-8 text-center cursor-pointer transition-all hover:shadow-lg hover:border-orange-300 hover:-translate-y-1 ${pack.badge?.includes('طلباً') ? 'shadow-xl ring-2 ring-orange-400/30' : ''}`}
+              className={`relative bg-white border-2 ${pack.color} rounded-2xl overflow-hidden text-center cursor-pointer transition-all hover:shadow-lg hover:border-orange-300 hover:-translate-y-1 ${pack.badge?.includes('طلباً') ? 'shadow-xl ring-2 ring-orange-400/30' : ''}`}
               dir="rtl"
             >
               {pack.badge && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-xs font-black px-4 py-1.5 rounded-full whitespace-nowrap">
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 bg-orange-500 text-white text-xs font-black px-4 py-1.5 rounded-full whitespace-nowrap">
                   {pack.badge}
                 </div>
               )}
 
-              <div className="text-6xl mb-4">{'🧴'.repeat(pack.qty)}</div>
-              <h3 className="text-2xl font-black text-gray-900 mb-1">{pack.ar}</h3>
-              <p className="text-sm text-gray-400 mb-4">{pack.fr}</p>
-
-              <div className="text-4xl font-black text-orange-500 mb-1">
-                {pack.amount.toLocaleString('fr-DZ')} <span className="text-lg">DA</span>
+              {/* Product image */}
+              <div className="relative h-48 overflow-hidden bg-gray-50">
+                <img
+                  src={pack.img}
+                  alt={pack.ar}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+                {/* qty overlay */}
+                <div className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm text-orange-600 font-black text-sm px-2 py-0.5 rounded-full border border-orange-200">
+                  ×{pack.qty}
+                </div>
               </div>
-              <p className="text-xs text-gray-400 mb-6">{pack.per}</p>
 
-              <button
-                onClick={e => { e.stopPropagation(); selectPack(pack); }}
-                className={`w-full font-black py-3 px-6 rounded-xl text-base transition-colors ${
-                  pack.badge?.includes('طلباً')
-                    ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-200'
-                    : 'bg-gray-100 hover:bg-orange-500 hover:text-white text-gray-800'
-                }`}
-              >
-                اطلب الآن ←
-              </button>
+              <div className="p-6">
+                <h3 className="text-2xl font-black text-gray-900 mb-1">{pack.ar}</h3>
+                <p className="text-sm text-gray-400 mb-4">{pack.fr}</p>
+
+                <div className="text-4xl font-black text-orange-500 mb-1">
+                  {pack.amount.toLocaleString('fr-DZ')} <span className="text-lg">DA</span>
+                </div>
+                <p className="text-xs text-gray-400 mb-6">{pack.per}</p>
+
+                <button
+                  onClick={e => { e.stopPropagation(); selectPack(pack); }}
+                  className={`w-full font-black py-3 px-6 rounded-xl text-base transition-colors ${
+                    pack.badge?.includes('طلباً')
+                      ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-200'
+                      : 'bg-gray-100 hover:bg-orange-500 hover:text-white text-gray-800'
+                  }`}
+                >
+                  اطلب الآن ←
+                </button>
+              </div>
             </div>
           ))}
         </div>

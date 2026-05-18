@@ -3,7 +3,7 @@ import { FiZap, FiRefreshCw, FiSend, FiActivity } from 'react-icons/fi';
 
 const fmt = n => Number(n || 0).toLocaleString('fr-DZ');
 
-export default function CAPIModule() {
+export default function CAPIModule({ compact = false }) {
   const [pixelStats, setPixelStats] = useState(null);
   const [webOrders, setWebOrders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -40,6 +40,38 @@ export default function CAPIModule() {
       setFiring(false);
     }
   }
+
+  if (compact) return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <FiActivity className="text-cyan-400 text-xs" />
+          <span className="text-xs font-black text-white uppercase tracking-widest">Meta CAPI</span>
+          <span className="font-mono text-[9px] text-slate-600 bg-slate-800 px-1.5 py-0.5 rounded">963525612756552</span>
+        </div>
+        <button onClick={load} className="p-1 text-slate-600 hover:text-white"><FiRefreshCw className={`text-xs ${loading ? 'animate-spin' : ''}`} /></button>
+      </div>
+      {pixelStats ? (
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            ['Events 24h', fmt(pixelStats.summary?.totalEvents || 0), 'text-white'],
+            ['Purchases', fmt(pixelStats.summary?.eventBreakdown?.Purchase || 0), 'text-green-400'],
+            ['Leads', fmt(pixelStats.summary?.eventBreakdown?.Lead || 0), 'text-blue-400'],
+            ['ViewContent', fmt(pixelStats.summary?.eventBreakdown?.ViewContent || 0), 'text-slate-400'],
+          ].map(([label, val, color]) => (
+            <div key={label} className="bg-slate-900 border border-slate-800 rounded-lg px-3 py-2">
+              <div className="text-[9px] text-slate-600 uppercase tracking-widest">{label}</div>
+              <div className={`text-sm font-black ${color}`}>{val}</div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-[10px] text-yellow-500 bg-yellow-500/10 border border-yellow-500/20 rounded-lg px-3 py-2">
+          Stats unavailable — check META_ACCESS_TOKEN
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="space-y-6">

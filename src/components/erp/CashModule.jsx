@@ -3,7 +3,7 @@ import { FiDollarSign, FiPlus, FiRefreshCw, FiArrowRight } from 'react-icons/fi'
 
 const fmt = n => Number(n || 0).toLocaleString('fr-DZ', { maximumFractionDigits: 2 });
 
-export default function CashModule() {
+export default function CashModule({ compact = false }) {
   const [boxes, setBoxes] = useState([]);
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -50,6 +50,33 @@ export default function CashModule() {
 
   const boxColors = ['from-cyan-500/20 to-cyan-600/10 border-cyan-500/30', 'from-blue-500/20 to-blue-600/10 border-blue-500/30', 'from-orange-500/20 to-orange-600/10 border-orange-500/30'];
   const textColors = ['text-cyan-400', 'text-blue-400', 'text-orange-400'];
+
+  if (compact) return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <FiDollarSign className="text-cyan-400 text-xs" />
+          <span className="text-xs font-black text-white uppercase tracking-widest">Cash Boxes</span>
+        </div>
+        <button onClick={load} className="p-1 text-slate-600 hover:text-white"><FiRefreshCw className={`text-xs ${loading ? 'animate-spin' : ''}`} /></button>
+      </div>
+      <div className="space-y-2">
+        {boxes.map((box, i) => (
+          <div key={box.id} className={`flex items-center justify-between bg-gradient-to-r ${boxColors[i % 3]} border rounded-lg px-3 py-2`}>
+            <div>
+              <div className={`text-[10px] font-black uppercase tracking-widest ${textColors[i % 3]}`}>{box.name}</div>
+              <div className="text-[9px] text-slate-600">{box.description}</div>
+            </div>
+            <div className={`text-sm font-black ${textColors[i % 3]}`}>{fmt(box.balance)} DA</div>
+          </div>
+        ))}
+      </div>
+      <div className={`flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-slate-500 border-t border-slate-800 pt-2`}>
+        <span>Total</span>
+        <span className="text-white">{fmt(boxes.reduce((s,b)=>s+Number(b.balance||0),0))} DA</span>
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-4">

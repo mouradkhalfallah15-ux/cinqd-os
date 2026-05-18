@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 const PACKS = [
-  { id: 'x1', qty: 1, amount: 480,  ar: 'زجاجة واحدة',  product_name: 'CINQD Multi-Usage Premium Clean 1L' },
-  { id: 'x2', qty: 2, amount: 900,  ar: 'زجاجتان',       product_name: 'CINQD Multi-Usage Premium Clean 1L' },
-  { id: 'x3', qty: 3, amount: 1290, ar: '3 زجاجات',     product_name: 'CINQD Multi-Usage Premium Clean 1L' },
+  { id: 'x1', qty: 1, amount: 480,  ar: 'زجاجة واحدة',  product_name: 'CINQD Multi-Usage Premium Clean' },
+  { id: 'x2', qty: 2, amount: 900,  ar: 'زجاجتان',       product_name: 'CINQD Multi-Usage Premium Clean' },
+  { id: 'x3', qty: 3, amount: 1290, ar: '3 زجاجات',     product_name: 'CINQD Multi-Usage Premium Clean' },
 ];
 
 const WILAYAS = [

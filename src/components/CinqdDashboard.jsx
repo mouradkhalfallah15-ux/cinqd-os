@@ -141,13 +141,29 @@ export default function CinqdDashboard() {
       </div>
 
       {/* Module */}
-      <main className="flex-1 p-6 overflow-auto">
-        {activeTab === 'commercial'    && <CommercialModule />}
-        {activeTab === 'manufacturing' && <ManufacturingModule />}
-        {activeTab === 'stock'         && <StockModule />}
-        {activeTab === 'crm'           && <CRMModule />}
-        {activeTab === 'cash'          && <CashModule />}
-        {activeTab === 'capi'          && <CAPIModule />}
+      <main className="flex-1 overflow-auto">
+        {activeTab === 'commercial' && (
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-0 h-full min-h-0">
+            {/* Orders — 2/3 width */}
+            <div className="xl:col-span-2 border-r border-slate-800 p-6 overflow-auto">
+              <CommercialModule />
+            </div>
+            {/* Cash Boxes + CAPI — 1/3 width */}
+            <div className="flex flex-col divide-y divide-slate-800">
+              <div className="p-4 overflow-auto flex-1">
+                <CashModule compact />
+              </div>
+              <div className="p-4 overflow-auto flex-1">
+                <CAPIModule compact />
+              </div>
+            </div>
+          </div>
+        )}
+        {activeTab === 'manufacturing' && <div className="p-6"><ManufacturingModule /></div>}
+        {activeTab === 'stock'         && <div className="p-6"><StockModule /></div>}
+        {activeTab === 'crm'           && <div className="p-6"><CRMModule /></div>}
+        {activeTab === 'cash'          && <div className="p-6"><CashModule /></div>}
+        {activeTab === 'capi'          && <div className="p-6"><CAPIModule /></div>}
       </main>
 
       <footer className="border-t border-slate-800 px-6 py-2 flex items-center justify-between">

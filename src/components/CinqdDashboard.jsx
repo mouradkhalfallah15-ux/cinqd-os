@@ -88,7 +88,11 @@ export default function CinqdDashboard() {
           <div className="hidden md:flex items-center gap-6">
             <div className="text-center">
               <div className="text-xs font-black text-white">{fmt(stats.orders?.today || 0)}</div>
-              <div className="text-[10px] text-slate-600 uppercase">Today</div>
+              <div className="text-[10px] text-slate-600 uppercase">Orders/Day</div>
+            </div>
+            <div className="text-center">
+              <div className="text-xs font-black text-orange-400">{fmt(stats.web_orders?.pending || 0)}</div>
+              <div className="text-[10px] text-slate-600 uppercase">Web New</div>
             </div>
             <div className="text-center">
               <div className="text-xs font-black text-yellow-400">{fmt(stats.invoices?.unpaid || 0)}</div>

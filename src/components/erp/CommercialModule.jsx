@@ -18,6 +18,7 @@ export default function CommercialModule() {
   const [orders, setOrders] = useState([]);
   const [invoices, setInvoices] = useState([]);
   const [deliveries, setDeliveries] = useState([]);
+  const [webOrders, setWebOrders] = useState([]);
   const [clients, setClients] = useState([]);
   const [stockItems, setStockItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -34,13 +35,14 @@ export default function CommercialModule() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [o, i, d, c, s, b] = await Promise.all([
+    const [o, i, d, c, s, b, w] = await Promise.all([
       fetch('/api/erp/orders').then(r => r.json()),
       fetch('/api/erp/invoices').then(r => r.json()),
       fetch('/api/erp/delivery').then(r => r.json()),
       fetch('/api/erp/clients').then(r => r.json()),
       fetch('/api/erp/stock/items').then(r => r.json()),
       fetch('/api/erp/cash/boxes').then(r => r.json()),
+      fetch('/api/erp/web-orders').then(r => r.json()),
     ]);
     setOrders(Array.isArray(o) ? o : []);
     setInvoices(Array.isArray(i) ? i : []);
@@ -48,6 +50,7 @@ export default function CommercialModule() {
     setClients(Array.isArray(c) ? c : []);
     setStockItems(Array.isArray(s) ? s : []);
     setCashBoxes(Array.isArray(b) ? b : []);
+    setWebOrders(Array.isArray(w) ? w : []);
     setLoading(false);
   }, []);
 
@@ -145,9 +148,16 @@ export default function CommercialModule() {
       </div>
 
       <div className="flex gap-1 border-b border-slate-800">
-        {[['orders','Orders'],['invoices','Invoices'],['delivery','Delivery'],['clients','Clients']].map(([key,label]) => (
+        {[['orders','Orders'],['invoices','Invoices'],['delivery','Delivery'],['web','Web Orders'],['clients','Clients']].map(([key,label]) => (
           <button key={key} onClick={() => setTab(key)}
-            className={`text-xs px-4 py-2 font-black uppercase tracking-widest transition-colors ${tab===key ? 'text-cyan-400 border-b-2 border-cyan-400' : 'text-slate-500 hover:text-slate-300'}`}>{label}</button>
+            className={`text-xs px-4 py-2 font-black uppercase tracking-widest transition-colors ${tab===key ? 'text-cyan-400 border-b-2 border-cyan-400' : 'text-slate-500 hover:text-slate-300'}`}>
+            {label}
+            {key==='web' && webOrders.filter(w=>w.status==='new').length > 0 && (
+              <span className="ml-1.5 bg-orange-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">
+                {webOrders.filter(w=>w.status==='new').length}
+              </span>
+            )}
+          </button>
         ))}
       </div>
 
@@ -380,6 +390,46 @@ export default function CommercialModule() {
             ))}
           </tbody>
         </table>
+      )}
+
+      {tab === 'web' && (
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-slate-800">
+                {['Ref','Client','Phone','Product','Qty','Amount','Affiliate','Status','Date','Action'].map(h => (
+                  <th key={h} className="text-left text-[10px] text-slate-500 uppercase tracking-widest pb-2 pr-3">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {webOrders.map(w => (
+                <tr key={w.id} className={`border-b border-slate-800/50 hover:bg-slate-800/20 ${w.status==='new' ? 'text-orange-300' : 'text-slate-400'}`}>
+                  <td className="py-2 pr-3 font-mono text-cyan-400">{w.doc_number}</td>
+                  <td className="py-2 pr-3 text-white">{w.client_name}</td>
+                  <td className="py-2 pr-3">{w.client_phone}</td>
+                  <td className="py-2 pr-3">{w.product_name}</td>
+                  <td className="py-2 pr-3">{w.qty}</td>
+                  <td className="py-2 pr-3 font-mono">{fmt(w.amount)} DA</td>
+                  <td className="py-2 pr-3">{w.affiliate_code || '—'}</td>
+                  <td className="py-2 pr-3">
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-black uppercase ${statusColor(w.status)}`}>{w.status}</span>
+                  </td>
+                  <td className="py-2 pr-3 text-slate-500">{new Date(w.created_at).toLocaleDateString('fr-DZ')}</td>
+                  <td className="py-2">
+                    {w.status === 'new' && (
+                      <button onClick={async () => {
+                        await fetch(`/api/erp/web-orders?id=${w.id}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({status:'processed'}) });
+                        load();
+                      }} className="text-[10px] bg-green-500/20 text-green-400 hover:bg-green-500/40 px-2 py-0.5 rounded">Process</button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {webOrders.length === 0 && <div className="text-center text-slate-600 text-xs py-8">No web orders yet.</div>}
+        </div>
       )}
 
       {tab === 'clients' && (

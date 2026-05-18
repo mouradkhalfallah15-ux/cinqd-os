@@ -1,26 +1,35 @@
 ---
 import Hero from '../components/landing/Hero';
-import Features from '../components/landing/Features';
 import Incentive from '../components/landing/Incentive';
+import Features from '../components/landing/Features';
 import Pricing from '../components/landing/Pricing';
 import Checkout from '../components/landing/Checkout';
 ---
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cinqd Landing Page</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <title>CINQD — منتجات التنظيف الصناعي الجزائرية</title>
+    <meta name="description" content="CINQD Multi-Usage Premium Clean — تركيبة صناعية متطورة، توصيل مجاني لجميع الولايات، دفع عند الاستلام">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 </head>
-<body style="background-color: #FFFFFF;">
+<body class="bg-[#fafafa]">
     <Hero client:load />
-    <Features client:load />
     <Incentive client:load />
+    <Features client:load />
     <Pricing client:load />
     <Checkout client:load />
 
     <style is:global>
         html { font-family: 'Inter', sans-serif; }
+        @keyframes marquee {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-33.333%); }
+        }
+        .animate-marquee {
+            animation: marquee 20s linear infinite;
+            width: max-content;
+        }
     </style>
 </body>
 </html>
